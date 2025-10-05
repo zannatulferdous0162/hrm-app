@@ -1,0 +1,297 @@
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+  <div class="row flex-grow-1 g-0">
+    <!-- Sidebar -->
+    <div class="col-lg-2 col-md-3 bg-dark text-white p-3 sidebar">
+      <h5 class="mb-4">Employee Catalogue</h5>
+      <ul class="nav nav-pills flex-column">
+      
+        <!--Employee List Iteam-->
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-success">ID</li>
+          <li class="list-group-item list-group-item-secondary">Employee Name</li>
+          <li class="list-group-item list-group-item-info">Designation</li>
+        </ul>
+      
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-10 col-md-9 main-content">
+      <div class="container-fluid h-100 py-3">
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="h-100 d-flex flex-column">
+          
+          <!-- Fixed Buttons at Top Left - Only 3 buttons -->
+<div class="mb-3 pb-2 border-bottom">
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+   
+    
+    <div class="ms-auto d-flex gap-2">
+        <button type="button" class="btn btn-success btn-sm">
+        <i class="bi bi-plus-circle"></i> Add
+      </button>
+      <button type="button" class="btn btn-warning btn-sm">
+        <i class="bi bi-pencil"></i> Edit
+      </button>
+      <button type="button" class="btn btn-danger btn-sm">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+    
+     
+    </div>
+  </div>
+</div>
+
+          <!-- Form Fields Scrollable Area -->
+          <div class="flex-grow-1 overflow-auto">
+            <div class="row g-3">
+              
+              <!-- Row 1 -->
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Employee Name *</label>
+                <input formControlName="employeeName" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('employeeName')?.invalid && employeeForm.get('employeeName')?.touched" 
+                     class="text-danger small">
+                  Employee name is required
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Employee Name Bangla</label>
+                <input formControlName="employeeNameBn" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Father's Name</label>
+                <input formControlName="fatherName" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Mother's Name</label>
+                <input formControlName="motherName" class="form-control form-control-sm" />
+              </div>
+
+              <!-- Row 2 -->
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Employee Type</label>
+                <select formControlName="employeeType" class="form-select form-select-sm">
+                   <option value="">-- Select Employee Type --</option>
+                  <option value="Permanent">Permanent</option>
+                  <option value="Contractual">Contractual</option>
+                </select>
+              </div>
+
+              
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Job Type</label>
+                <select formControlName="jobType" class="form-select form-select-sm">
+                  <option value="">-- Select Employee Type --</option>
+                  <option value="Full Time">Full Time</option>
+                  <option value="Part Time">Part Time</option>
+                </select>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Joining Date</label>
+                <input type="date" formControlName="joiningDate" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Date of Birth</label>
+                <input type="date" formControlName="dob" class="form-control form-control-sm" />
+              </div>
+               <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Gender</label>
+                <select formControlName="Gender" class="form-select form-select-sm">
+                  <option value="">-- Select Gender --</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+
+                </select>
+
+              </div>
+
+              <!-- Row 3 -->
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Department</label>
+                <input formControlName="department" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Designation</label>
+                <input formControlName="designation" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Contact No</label>
+                <input formControlName="contactNo" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('contactNo')?.invalid && employeeForm.get('contactNo')?.touched" 
+                     class="text-danger small">
+                  Please enter a valid 11-digit contact number
+                </div>
+              </div>
+                 <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Employee Type</label>
+                <select formControlName="employeeType" class="form-select form-select-sm">
+                   <option value="">-- Select MaritalStatus --</option>
+                  <option value="Permanent">Married</option>
+                  <option value="Contractual">Single</option>
+                </select>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">NID</label>
+                <input formControlName="nid" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('nid')?.invalid && employeeForm.get('nid')?.touched" 
+                     class="text-danger small">
+                  Please enter a valid NID (10-17 digits)
+                </div>
+              </div>
+
+              <!-- Row 4 -->
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Address</label>
+                <textarea formControlName="address" class="form-control form-control-sm" rows="2"></textarea>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Permanent Address</label>
+                <textarea formControlName="permanentAddress" class="form-control form-control-sm" rows="2"></textarea>
+              </div>
+
+              <!-- Row 5 -->
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Upload Image</label>
+                <input type="file" class="form-control form-control-sm" (change)="onFileChange($event)" 
+                       accept="image/*" />
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Is Active?</label><br />
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="true" formControlName="isActive" 
+                         id="activeYes" />
+                  <label class="form-check-label" for="activeYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="false" formControlName="isActive" 
+                         id="activeNo" />
+                  <label class="form-check-label" for="activeNo">No</label>
+                </div>
+              </div>
+            </div>
+
+            
+
+            <!-- Sub Sections -->
+            <div class="row mt-4 g-3">
+              <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0">Family Information</h6>
+                  </div>
+                  <div class="card-body">
+                     <table class="table table-sm table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Relation</th>
+                          <th>Contact</th>
+                           <th>CurrentAddress</th>
+                           <th>PermanentAddress</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Sample 1</td><td>Father</td><td>0123456789</td><td>Mirpur 11</td><td>Mirpur 11</td></tr>
+                        <tr><td>Sample 2</td><td>Mother</td><td>0123456789</td><td>Mirpur 11</td><td>Mirpur 11</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+
+              <!---->
+               <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header bg-secondary text-white py-2">
+                    <h6 class="mb-0">EmployeeDocument</h6>
+                  </div>
+                  <div class="card-body">
+                    <table class="table table-sm table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>DocumentName</th>
+                          <th>FileName</th>
+                          <th>UploadDate</th>
+                          <th>UploadedFile</th>
+                          <th>CreatedBy</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Sample 1</td><td>sscDocument</td><td>11/11/2025</td><td>PDF</td><td>Zanant</td></tr>
+                        <tr><td>Sample 1</td><td>sscDocument</td><td>11/11/2025</td><td>PDF</td><td>Zanant</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              
+
+                 <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header bg-secondary text-white py-2">
+                    <h6 class="mb-0">EmployeeProfessionalCertification</h6>
+                  </div>
+                  <div class="card-body">
+                    <table class="table table-sm table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>CertificationTitle</th>
+                          <th>CertificationInstitute</th>
+                          <th>FromDate</th>
+                          <th>ToDate</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                         <tr><td>Sample 2</td><td>PDF</td><td>11/1/2024</td><td>11/1/2024</td></tr>
+                        <tr><td>Sample 2</td><td>PDF</td><td>11/1/2024</td><td>11/1/2024</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              
+
+              <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0">Education Information</h6>
+                  </div>
+                  <div class="card-body">
+                    <table class="table table-sm table-striped table-hover">
+                      <thead>
+                        <tr>
+                          <th>Degree</th>
+                          <th>Institution</th>
+                          <th>Year</th>
+                          <th>Cgpa</th>
+                           <th>PassingYear</th>
+                          <th>Achievement</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>BSc</td><td>University</td><td>2020</td><td>3.00</td><td>2024</td><td>Leadership Recognition</td></tr>
+                       <tr><td>BSc</td><td>University</td><td>2020</td><td>3.00</td><td>2024</td><td>Leadership Recognition</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
