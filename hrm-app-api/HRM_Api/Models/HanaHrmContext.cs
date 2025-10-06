@@ -53,7 +53,7 @@ public partial class HanaHrmContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=10.40.10.100;Database=HANA-HRM;User Id=Sa;Password=Sa@123456;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Data Source=10.40.10.100;Initial Catalog=HANA-HRM;User ID=Sa;Password=Sa@123456;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
