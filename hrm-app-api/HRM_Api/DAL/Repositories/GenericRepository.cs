@@ -20,7 +20,7 @@ namespace HRM_Api.DAL.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(object id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -31,13 +31,15 @@ namespace HRM_Api.DAL.Repositories
             await _context.SaveChangesAsync();
         }
 
+
+
         public async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(object id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)
@@ -47,25 +49,14 @@ namespace HRM_Api.DAL.Repositories
             }
         }
 
-        public Task<T?> GetByIdAsync(object id)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void Update(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(T entity)
-        {
-            throw new NotImplementedException();
-        }
 
         public IQueryable<T> Query()
         {
-            throw new NotImplementedException();
+            return _dbSet.AsQueryable();
         }
+
+   
     }
 
 }

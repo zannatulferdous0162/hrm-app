@@ -5,8 +5,9 @@
         Task<IEnumerable<T>> GetAllAsync();
         Task<T?> GetByIdAsync(object id);
         Task AddAsync(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(object id);
         IQueryable<T> Query();
+      
     }
 }
