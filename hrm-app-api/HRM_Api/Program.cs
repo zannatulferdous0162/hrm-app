@@ -13,7 +13,6 @@ builder.Services.AddControllers()
     });
 
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 
@@ -36,9 +35,6 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials());
 });
-
-
-//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 
 var app = builder.Build();

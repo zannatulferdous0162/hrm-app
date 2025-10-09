@@ -3,7 +3,7 @@
 
 <div class="container-fluid vh-100 d-flex flex-column p-0">
   <div class="row flex-grow-1 g-0">
-    <!-- Sidebar: Employee List -->
+  
     <div class="col-lg-2 col-md-3 bg-dark text-white p-3">
       <h5 class="mb-4">Employee Catalogue</h5>
       <ul class="list-group">
@@ -20,7 +20,7 @@
               <strong>{{ emp.employeeName }}</strong>
               <div class="small text-muted">{{ emp.designation }}</div>
             </div>
-            <span class="badge bg-success rounded-pill">{{ emp.idClient }}</span>
+            <!-- <span class="badge bg-success rounded-pill">{{ emp.idClient }}</span> -->
           </div>
         </li>
 
@@ -34,15 +34,6 @@
       </ul>
     </div>
 
-    <!-- Placeholder for future detail area -->
-    <!-- <div class="col-lg-10 col-md-9 bg-light p-4">
-      <h4 *ngIf="selectedEmployee">Selected Employee:</h4>
-      <div *ngIf="selectedEmployee" class="mt-2">
-        <p><strong>ID:</strong> {{ selectedEmployee.id }}</p>
-        <p><strong>Name:</strong> {{ selectedEmployee.employeeName }}</p>
-        <p><strong>Designation:</strong> {{ selectedEmployee.designation }}</p>
-      </div>
-    </div> -->
   </div>
 </div>
 

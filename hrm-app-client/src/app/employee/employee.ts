@@ -10,15 +10,14 @@ import { EmployeeService } from '../service/employeeServices';
   standalone: true,
   imports: [CommonModule, HttpClientModule],
   templateUrl: './employee.html',
-  providers: [EmployeeService] // Service provider add করুন
+  providers: [EmployeeService] 
 })
 export class EmployeeComponent implements OnInit {
   employees: EmployeeDto[] = [];
   selectedEmployee?: EmployeeDto;
   selectedEmployeeId?: number;
   loading = false;
-
-  // Service ব্যবহার করুন
+ private idClient = 10001001;
   constructor(private employeeService: EmployeeService) {}
 
   ngOnInit(): void {
@@ -28,16 +27,19 @@ export class EmployeeComponent implements OnInit {
   loadEmployees(): void {
     this.loading = true;
     
-    this.employeeService.getAllEmployees(1).subscribe({
+    this.employeeService.getAllEmployees(this.idClient).subscribe({
       next: (data) => {
         this.employees = data;
         this.loading = false;
-        console.log('Employees loaded:', data); // Debugging এর জন্য
+        console.log('Employees loaded:', data);
       },
       error: (err) => {
         console.error('Error loading employees:', err);
         this.loading = false;
-        // Error message show করুন UI তে
+       
+        if (err.status === 404) {
+          console.log('No employees found for this client');
+        }
       }
     });
   }
@@ -45,7 +47,7 @@ export class EmployeeComponent implements OnInit {
   selectEmployee(emp: EmployeeDto): void {
     this.selectedEmployee = emp;
     this.selectedEmployeeId = emp.id;
-    console.log('Selected employee:', emp); // Debugging এর জন্য
+    console.log('Selected employee:', emp); 
   }
 
   trackById(index: number, emp: EmployeeDto): number {
