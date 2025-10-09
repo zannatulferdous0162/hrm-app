@@ -1,26 +1,58 @@
 <div class="container-fluid vh-100 d-flex flex-column p-0">
   <div class="row flex-grow-1 g-0">
-    <!-- Sidebar -->
-    <div class="col-lg-2 col-md-3 bg-dark text-white p-3 sidebar">
+
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+  <div class="row flex-grow-1 g-0">
+    <!-- Sidebar: Employee List -->
+    <div class="col-lg-2 col-md-3 bg-dark text-white p-3">
       <h5 class="mb-4">Employee Catalogue</h5>
-      <ul class="nav nav-pills flex-column">
-      
-        <!--Employee List Iteam-->
-        <ul class="list-group">
-          <li class="list-group-item list-group-item-success">ID</li>
-          <li class="list-group-item list-group-item-success">Employee Name</li>
-          <li class="list-group-item list-group-item-success">Designation</li>
-        </ul>
-      
+      <ul class="list-group">
+        <li
+          class="list-group-item list-group-item-action"
+          [class.active]="selectedEmployeeId === emp.id"
+          *ngFor="let emp of employees; trackBy: trackById"
+          (click)="selectEmployee(emp)"
+          style="cursor: pointer;"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <small class="d-block">ID: {{ emp.id }}</small>
+              <strong>{{ emp.employeeName }}</strong>
+              <div class="small text-muted">{{ emp.designation }}</div>
+            </div>
+            <span class="badge bg-success rounded-pill">{{ emp.idClient }}</span>
+          </div>
+        </li>
+
+        <li *ngIf="!loading && employees.length === 0" class="list-group-item">
+          No employees found.
+        </li>
+        <li *ngIf="loading" class="list-group-item text-center">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
+          Loading...
+        </li>
       </ul>
     </div>
 
-    <!-- Main Content -->
-    <div class="col-lg-10 col-md-9 main-content">
+    <!-- Placeholder for future detail area -->
+    <!-- <div class="col-lg-10 col-md-9 bg-light p-4">
+      <h4 *ngIf="selectedEmployee">Selected Employee:</h4>
+      <div *ngIf="selectedEmployee" class="mt-2">
+        <p><strong>ID:</strong> {{ selectedEmployee.id }}</p>
+        <p><strong>Name:</strong> {{ selectedEmployee.employeeName }}</p>
+        <p><strong>Designation:</strong> {{ selectedEmployee.designation }}</p>
+      </div>
+    </div> -->
+  </div>
+</div>
+
+
+
+    <!-- <div class="col-lg-10 col-md-9 main-content">
       <div class="container-fluid h-100 py-3">
         <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="h-100 d-flex flex-column">
           
-          <!-- Fixed Buttons at Top Left - Only 3 buttons -->
+        
 <div class="mb-3 pb-2 border-bottom">
   <div class="d-flex gap-2 flex-wrap align-items-center">
    
@@ -41,11 +73,11 @@
   </div>
 </div>
 
-          <!-- Form Fields Scrollable Area -->
+          
           <div class="flex-grow-1 overflow-auto">
             <div class="row g-3">
               
-              <!-- Row 1 -->
+         
               <div class="col-xl-3 col-lg-4 col-md-6">
                 <label class="form-label fw-semibold">Employee Name *</label>
                 <input formControlName="employeeName" class="form-control form-control-sm" />
@@ -70,7 +102,7 @@
                 <input formControlName="motherName" class="form-control form-control-sm" />
               </div>
 
-              <!-- Row 2 -->
+            
               <div class="col-xl-3 col-lg-4 col-md-6">
                 <label class="form-label fw-semibold">Employee Type</label>
                 <select formControlName="employeeType" class="form-select form-select-sm">
@@ -102,16 +134,17 @@
               </div>
                <div class="col-xl-3 col-lg-4 col-md-6">
                 <label class="form-label fw-semibold">Gender</label>
-                <select formControlName="Gender" class="form-select form-select-sm">
-                  <option value="">-- Select Gender --</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+         <select formControlName="gender" class="form-select form-select-sm">
+  <option value="">-- Select Gender --</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+</select>
 
-                </select>
+
 
               </div>
 
-              <!-- Row 3 -->
+            
               <div class="col-xl-3 col-lg-4 col-md-6">
                 <label class="form-label fw-semibold">Department</label>
                 <input formControlName="department" class="form-control form-control-sm" />
@@ -148,7 +181,7 @@
                 </div>
               </div>
 
-              <!-- Row 4 -->
+          
               <div class="col-12 col-lg-6">
                 <label class="form-label fw-semibold">Address</label>
                 <textarea formControlName="address" class="form-control form-control-sm" rows="2"></textarea>
@@ -159,7 +192,6 @@
                 <textarea formControlName="permanentAddress" class="form-control form-control-sm" rows="2"></textarea>
               </div>
 
-              <!-- Row 5 -->
               <div class="col-12 col-lg-6">
                 <label class="form-label fw-semibold">Upload Image</label>
                 <input type="file" class="form-control form-control-sm" (change)="onFileChange($event)" 
@@ -183,7 +215,6 @@
 
             
 
-            <!-- Sub Sections -->
             <div class="row mt-4 g-3">
               <div class="col-12 col-lg-6">
                 <div class="card h-100">
@@ -211,7 +242,6 @@
               </div>
 
 
-              <!---->
                <div class="col-12 col-lg-6">
                 <div class="card h-100">
                   <div class="card-header bg-secondary text-white py-2">
@@ -292,6 +322,6 @@
           </div>
         </form>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

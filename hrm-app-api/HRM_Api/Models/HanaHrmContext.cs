@@ -51,9 +51,9 @@ public partial class HanaHrmContext : DbContext
 
     public virtual DbSet<WeekOff> WeekOffs { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
-        => optionsBuilder.UseSqlServer("Data Source=10.40.10.100;Initial Catalog=HANA-HRM;User ID=Sa;Password=Sa@123456;TrustServerCertificate=true;");
+    //    => optionsBuilder.UseSqlServer("Data Source=10.40.10.100;Initial Catalog=HANA-HRM;User ID=Sa;Password=Sa@123456;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,0 +1,24 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { EmployeeDto } from '../models/employeeDto';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeService {
+  private apiUrl = 'https://localhost:7030/api/employee'; 
+
+  constructor(private http: HttpClient) { }
+
+  getAllEmployees(idClient: number): Observable<EmployeeDto[]> {
+    let params = new HttpParams().set('idClient', idClient.toString());
+    return this.http.get<EmployeeDto[]>(this.apiUrl, { params });
+  }
+
+  getEmployeeById(id: number, idClient: number): Observable<EmployeeDto> {
+    let params = new HttpParams()
+      .set('idClient', idClient.toString());
+    return this.http.get<EmployeeDto>(`${this.apiUrl}/${id}`, { params });
+  }
+}

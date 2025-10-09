@@ -1,39 +1,28 @@
-﻿using HRM_Api.DAL.Interfaces;
-using HRM_Api.DTOs;
+﻿using HRM_Api.DTOs;
 using HRM_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using System.Net.Sockets;
 
 namespace HRM_Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/employee")]
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IGenericRepository<Employee> _repository;
-
-
-        public EmployeeController(IGenericRepository<Employee> repository)
+        private readonly HanaHrmContext _context;
+        public EmployeeController(HanaHrmContext context)
         {
-            _repository = repository;
+            _context = context;
         }
 
-        
-        [HttpGet("GetEmployees")]
-        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAll()
+        [HttpGet]
+        //[HttpGet("getallemployee")]
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAllEmployees([FromQuery] int idClient)
         {
-            var employees = await _repository
-                .Query()
-                .Include(e => e.Department)
-                .Include(e => e.Section)
-                .Include(e => e.Designation)
-                .Include(e => e.Gender)
-                .Include(e => e.Religion)
-                .Include(e => e.JobType)
-                .Include(e => e.EmployeeType)
-                .Include(e => e.MaritalStatus)
-                .Include(e => e.WeekOff)
+            var employees = await _context.Employees
+                .AsNoTracking()
+                .Where(e => e.IdClient == idClient)
                 .Select(e => new EmployeeDTO
                 {
                     Id = e.Id,
@@ -71,130 +60,165 @@ namespace HRM_Api.Controllers
                     IsActive = e.IsActive,
                     SetDate = e.SetDate,
                     CreatedBy = e.CreatedBy,
-                    EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null
+                    //EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null
+
+                    EmployeeEducationInfos = e.EmployeeEducationInfos.Select(s => new EducationInfoDto
+                    {
+                        Id = s.Id,
+                        IdClient = s.IdClient,
+                        InstituteName = s.InstituteName,
+                        IdEducationLevel = s.IdEducationLevel,
+                        IdEducationExamination = s.IdEducationExamination,
+                        IdEducationResult = s.IdEducationResult,
+                        Cgpa = s.Cgpa,
+                        ExamScale = s.ExamScale,
+                        Marks = s.Marks,
+                        Major = s.Major,
+                        PassingYear = s.PassingYear,
+                        IsForeignInstitute = s.IsForeignInstitute,
+                        Duration = s.Duration,
+                        Achievement = s.Achievement,
+                        SetDate = s.SetDate
+                    }).ToList()
+
                 })
                 .ToListAsync();
 
+
+            if (employees == null || !employees.Any())
+            {
+                return NotFound(new { message = "No employees found for this client" });
+            }
+
             return Ok(employees);
+
+
         }
 
-        // ✅ GET: api/Employee/GetEmployeeById/5
-        [HttpGet("GetEmployeeById/{id}")]
-        public async Task<ActionResult<EmployeeDTO>> Get(int id)
-        {
-            var employee = await _repository.Query()
-                .Include(e => e.Department)
-                .Include(e => e.Section)
-                .Include(e => e.Designation)
-                .FirstOrDefaultAsync(e => e.Id == id);
 
-            if (employee == null) return NotFound();
 
-            var dto = new EmployeeDTO
-            {
-                Id = employee.Id,
-                IdClient = employee.IdClient,
-                EmployeeName = employee.EmployeeName,
-                FatherName = employee.FatherName,
-                DepartmentName = employee.Department.DepartName,
-                SectionName = employee.Section.SectionName,
-                Designation = employee.Designation?.DesignationName,
-                EmployeeImageBase = employee.EmployeeImage != null ? Convert.ToBase64String(employee.EmployeeImage) : null
-            };
+        //[HttpGet("getemployeedetail")]
+        //public async Task<ActionResult<EmployeeDTO>> GetEmployeeById([FromQuery] int idClient, [FromQuery] int id)
+        //{
+        //    try
+        //    {
+        //        var employees = await _context.Employees
+        //            .Where(e => e.IdClient == idClient && e.Id == id)
+        //            .Select(e => new EmployeeDTO
+        //            {
+        //                Id = e.Id,
+        //                IdClient = e.IdClient,
+        //                EmployeeName = e.EmployeeName,
+        //                FatherName = e.FatherName,
+        //                DepartmentName = e.Department != null ? e.Department.DepartName : null,
+        //                SectionName = e.Section != null ? e.Section.SectionName : null,
+        //                Designation = e.Designation != null ? e.Designation.DesignationName : null,
+        //                ContactNo = e.ContactNo != null ? e.ContactNo : null,
 
-            return Ok(dto);
-        }
+        //            })
+        //            .FirstOrDefaultAsync();
 
-        // ✅ POST: api/Employee/InsertEmployee
-        [HttpPost("InsertEmployee")]
-        public async Task<ActionResult> Post([FromForm] EmployeeDTO dto)
-        {
-            byte[]? imageBytes = null;
+        //        if (employees == null)
+        //            return NotFound(new { Message = "Employee not found." });
 
-            if (dto.ProfileFile != null && dto.ProfileFile.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await dto.ProfileFile.CopyToAsync(ms);
-                imageBytes = ms.ToArray();
-            }
+        //        return Ok(employees);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { Message = "Error while fetching employee detail.", Error = ex.Message });
+        //    }
+        //}
 
-            var employee = new Employee
-            {
-                IdClient = dto.IdClient,
-                EmployeeName = dto.EmployeeName,
-                EmployeeNameBangla = dto.EmployeeNameBangla,
-                FatherName = dto.FatherName,
-                MotherName = dto.MotherName,
-                BirthDate = dto.BirthDate,
-                JoiningDate = dto.JoiningDate,
-                IdDepartment = dto.IdDepartment,
-                IdSection = dto.IdSection,
-                IdDesignation = dto.IdDesignation,
-                Address = dto.Address,
-                PresentAddress = dto.PresentAddress,
-                IdGender = dto.IdGender,
-                IdReligion = dto.IdReligion,
-                IdJobType = dto.IdJobType,
-                IdEmployeeType = dto.IdEmployeeType,
-                IdMaritalStatus = dto.IdMaritalStatus,
-                IdWeekOff = dto.IdWeekOff,
-                NationalIdentificationNumber = dto.NationalIdentificationNumber,
-                ContactNo = dto.ContactNo,
-                HasOvertime = dto.HasOvertime,
-                HasAttendenceBonus = dto.HasAttendenceBonus,
-                IsActive = dto.IsActive,
-                SetDate = DateTime.Now,
-                CreatedBy = dto.CreatedBy,
-                EmployeeImage = imageBytes
-            };
 
-            await _repository.AddAsync(employee);
-            return CreatedAtAction(nameof(Get), new { id = employee.Id }, employee);
-        }
+        //[HttpPost("ceateemployee")]
+        //public async Task<ActionResult> CreateEmployee([FromBody] EmployeeDTO dto)
+        //{
+        //    byte[]? imageBytes = null;
 
-     
-        [HttpPut("UpdateEmployee/{id}")]
-        public async Task<IActionResult> Put(int id, [FromForm] EmployeeDTO dto)
-        {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
+        //    if (dto.ProfileFile != null && dto.ProfileFile.Length > 0)
+        //    {
+        //        using var ms = new MemoryStream();
+        //        await dto.ProfileFile.CopyToAsync(ms);
+        //        imageBytes = ms.ToArray();
+        //    }
 
-            existing.EmployeeName = dto.EmployeeName;
-            existing.EmployeeNameBangla = dto.EmployeeNameBangla;
-            existing.FatherName = dto.FatherName;
-            existing.MotherName = dto.MotherName;
-            existing.IdDepartment = dto.IdDepartment;
-            existing.IdSection = dto.IdSection;
-            existing.IdDesignation = dto.IdDesignation;
-            existing.ContactNo = dto.ContactNo;
-            existing.Address = dto.Address;
-            existing.PresentAddress = dto.PresentAddress;
-            existing.IdReligion = dto.IdReligion;
-            existing.IdGender = dto.IdGender;
-            existing.IdJobType = dto.IdJobType;
-            existing.IdEmployeeType = dto.IdEmployeeType;
-            existing.IsActive = dto.IsActive;
+        //    var employee = new Employee
+        //    {
+        //        IdClient = dto.IdClient,
+        //        EmployeeName = dto.EmployeeName,
+        //        EmployeeNameBangla = dto.EmployeeNameBangla,
+        //        FatherName = dto.FatherName,
+        //        MotherName = dto.MotherName,
+        //        BirthDate = dto.BirthDate,
+        //        JoiningDate = dto.JoiningDate,
+        //        IdDepartment = dto.IdDepartment,
+        //        IdSection = dto.IdSection,
+        //        IdDesignation = dto.IdDesignation,
+        //        Address = dto.Address,
+        //        PresentAddress = dto.PresentAddress,
+        //        IdGender = dto.IdGender,
+        //        IdReligion = dto.IdReligion,
+        //        IdJobType = dto.IdJobType,
+        //        IdEmployeeType = dto.IdEmployeeType,
+        //        IdMaritalStatus = dto.IdMaritalStatus,
+        //        IdWeekOff = dto.IdWeekOff,
+        //        NationalIdentificationNumber = dto.NationalIdentificationNumber,
+        //        ContactNo = dto.ContactNo,
+        //        HasOvertime = dto.HasOvertime,
+        //        HasAttendenceBonus = dto.HasAttendenceBonus,
+        //        IsActive = dto.IsActive,
+        //        SetDate = DateTime.Now,
+        //        CreatedBy = dto.CreatedBy,
+        //        EmployeeImage = imageBytes
+        //    };
 
-            if (dto.ProfileFile != null && dto.ProfileFile.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await dto.ProfileFile.CopyToAsync(ms);
-                existing.EmployeeImage = ms.ToArray();
-            }
+        //    await _repository.AddAsync(employee);
+        //    return CreatedAtAction(nameof(Get), new { id = employee.Id }, employee);
+        //}
 
-            await _repository.UpdateAsync(existing);
-            return NoContent();
-        }
 
-        
-        [HttpDelete("DeleteEmployee/{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
+        //[HttpPut("updateemployee")]
+        //public async Task<IActionResult> UpdateEmployee([FromForm] EmployeeDTO dto)
+        //{
+        //    var existing = await _repository.GetByIdAsync(id);
+        //    if (existing == null) return NotFound();
 
-            await _repository.DeleteAsync(id);
-            return NoContent();
-        }
+        //    existing.EmployeeName = dto.EmployeeName;
+        //    existing.EmployeeNameBangla = dto.EmployeeNameBangla;
+        //    existing.FatherName = dto.FatherName;
+        //    existing.MotherName = dto.MotherName;
+        //    existing.IdDepartment = dto.IdDepartment;
+        //    existing.IdSection = dto.IdSection;
+        //    existing.IdDesignation = dto.IdDesignation;
+        //    existing.ContactNo = dto.ContactNo;
+        //    existing.Address = dto.Address;
+        //    existing.PresentAddress = dto.PresentAddress;
+        //    existing.IdReligion = dto.IdReligion;
+        //    existing.IdGender = dto.IdGender;
+        //    existing.IdJobType = dto.IdJobType;
+        //    existing.IdEmployeeType = dto.IdEmployeeType;
+        //    existing.IsActive = dto.IsActive;
+
+        //    if (dto.ProfileFile != null && dto.ProfileFile.Length > 0)
+        //    {
+        //        using var ms = new MemoryStream();
+        //        await dto.ProfileFile.CopyToAsync(ms);
+        //        existing.EmployeeImage = ms.ToArray();
+        //    }
+
+        //    await _repository.UpdateAsync(existing);
+        //    return NoContent();
+        //}
+
+
+        //[HttpDelete("deleteemployee")]
+        //public async Task<IActionResult> DeleteEmployee([FromRoute] int idClient, [FromRoute] int id)
+        //{
+        //    var existing = await _repository.GetByIdAsync(id);
+        //    if (existing == null) return NotFound();
+
+        //    await _repository.DeleteAsync(id);
+        //    return NoContent();
+        //}
     }
 }

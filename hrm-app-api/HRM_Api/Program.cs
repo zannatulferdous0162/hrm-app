@@ -1,6 +1,4 @@
-﻿using HRM_Api.DAL.Interfaces;
-using HRM_Api.DAL.Repositories;
-using HRM_Api.Models;
+﻿using HRM_Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -29,11 +27,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        builder => builder
+            .WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:3070")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
 
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+//builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 
 var app = builder.Build();
+app.UseCors("AllowAngularApp");
 
 
 if (app.Environment.IsDevelopment())

@@ -1,40 +1,39 @@
 export interface EmployeeDto {
-  idClient?: number;
-  id?: number;
-
-  employeeName: string;
+  id: number;
+  idClient: number;
+  employeeName?: string;
   employeeNameBangla?: string;
-  employeeImage?: string;
-
   fatherName?: string;
   motherName?: string;
-
-  idReportingManager?: number;
-  idJobType?: number;
-  idEmployeeType?: number;
-
-  birthDate?: string;      
-  joiningDate?: string;
-
-  idGender?: number;
-  idReligion?: number;
-  idDepartment?: number;
-  idSection?: number;
-  idDesignation?: number;
-
-  hasOvertime?: boolean;
-  hasAttendanceBonus?: boolean;
-
-  idWeekOff?: number;
+  birthDate?: Date | null;
+  joiningDate?: Date | null;
+  idDepartment: number;
+  departmentName?: string;
+  idSection: number;
+  sectionName?: string;
+  idDesignation?: number | null;
+  designation?: string;
   address?: string;
+  idGender?: number | null;
+  genderName?: string;
+  idReligion?: number | null;
+  religionName?: string;
+  idReportingManager?: number | null;
+  reportingManager?: string;
+  idJobType?: number | null;
+  jobTypeName?: string;
+  idEmployeeType?: number | null;
+  typeName?: string;
   presentAddress?: string;
-
   nationalIdentificationNumber?: string;
   contactNo?: string;
-  idMaritalStatus?: number;
-
-  isActive?: boolean;
-
-  setDate?: string;
+  isActive?: boolean | null;
+  hasOvertime?: boolean | null;
+  hasAttendenceBonus?: boolean | null;
+  idWeekOff?: number | null;
+  weekOffDay?: string;
+  idMaritalStatus?: number | null;
+  maritalStatusName?: string;
+  setDate?: Date | null;
   createdBy?: string;
 }

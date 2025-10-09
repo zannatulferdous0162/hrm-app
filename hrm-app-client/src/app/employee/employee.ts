@@ -1,57 +1,54 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { EmployeeDto } from '../models/employeeDto';
+import { EmployeeService } from '../service/employeeServices';
+
 
 @Component({
   selector: 'app-employee',
+  standalone: true,
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './employee.html',
-   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule] // Add imports here
-  // If you have styleUrls, include them here
-  // styleUrls: ['./employee.css']
+  providers: [EmployeeService] // Service provider add করুন
 })
 export class EmployeeComponent implements OnInit {
-onReset() {
-throw new Error('Method not implemented.');
-}
-  employeeForm: FormGroup;
+  employees: EmployeeDto[] = [];
+  selectedEmployee?: EmployeeDto;
+  selectedEmployeeId?: number;
+  loading = false;
 
-  constructor(private fb: FormBuilder) {
-    this.employeeForm = this.fb.group({
-      employeeName: [''],
-      employeeNameBn: [''],
-      fatherName: [''],
-      motherName: [''],
-      employeeType: [''],
-      jobType: [''],
-      joiningDate: [''],
-      dob: [''],
-      department: [''],
-      designation: [''],
-      contactNo: [''],
-      nid: [''],
-      address: [''],
-      permanentAddress: [''],
-      isActive: [true]
+  // Service ব্যবহার করুন
+  constructor(private employeeService: EmployeeService) {}
+
+  ngOnInit(): void {
+    this.loadEmployees();
+  }
+
+  loadEmployees(): void {
+    this.loading = true;
+    
+    this.employeeService.getAllEmployees(1).subscribe({
+      next: (data) => {
+        this.employees = data;
+        this.loading = false;
+        console.log('Employees loaded:', data); // Debugging এর জন্য
+      },
+      error: (err) => {
+        console.error('Error loading employees:', err);
+        this.loading = false;
+        // Error message show করুন UI তে
+      }
     });
   }
 
-  ngOnInit(): void {
-    // Initialization logic if needed
+  selectEmployee(emp: EmployeeDto): void {
+    this.selectedEmployee = emp;
+    this.selectedEmployeeId = emp.id;
+    console.log('Selected employee:', emp); // Debugging এর জন্য
   }
 
-  onSubmit(): void {
-    if (this.employeeForm.valid) {
-      console.log('Form submitted:', this.employeeForm.value);
-      // Handle form submission logic here
-    }
-  }
-
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      // Handle file upload logic here
-      console.log('File selected:', file);
-    }
+  trackById(index: number, emp: EmployeeDto): number {
+    return emp.id;
   }
 }
