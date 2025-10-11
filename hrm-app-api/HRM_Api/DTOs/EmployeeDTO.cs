@@ -40,13 +40,13 @@
         public DateTime? SetDate { get; set; }
         public string? CreatedBy { get; set; }
 
-        //public IFormFile? ProfileFile { get; set; }
-        //public string? EmployeeImageBase { get; set; }
+        public IFormFile? ProfileFile { get; set; }
+        public string? EmployeeImageBase { get; set; }
 
-        ////public List<DocumentDto> EmployeeDocuments { get; set; } = [];
+        public List<DocumentDto> EmployeeDocuments { get; set; } = [];
         public List<EducationInfoDto> EmployeeEducationInfos { get; set; } = [];
-        //public List<EmployeefamilyInfoDto> EmployeeFamilyInfos { get; set; } = [];
-        //public List<EmployeeProfessionalCertificationDto> EmployeeProfessionalCertifications { get; set; } = [];
+        public List<EmployeefamilyInfoDto> EmployeeFamilyInfos { get; set; } = [];
+        public List<EmployeeProfessionalCertificationDto> EmployeeProfessionalCertifications { get; set; } = [];
 
     }
 }

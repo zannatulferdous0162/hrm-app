@@ -1,4 +1,5 @@
 export interface EmployeeDto {
+  
   id: number;
   idClient: number;
   employeeName?: string;
@@ -18,6 +19,7 @@ export interface EmployeeDto {
   genderName?: string;
   idReligion?: number | null;
   religionName?: string;
+  nid: string;
   idReportingManager?: number | null;
   reportingManager?: string;
   idJobType?: number | null;
