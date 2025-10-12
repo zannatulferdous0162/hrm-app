@@ -1,49 +1,49 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { dropDown } from '../models/drop-down';
 
 @Injectable({
   providedIn: 'root'
 })
-
-export class CommonService{
-    private apiUrl = 'https://localhost:7030/api/dropdowns';
+export class CommonService {
+  private apiUrl = 'https://localhost:7030/api/dropdowns';
 
   constructor(private http: HttpClient) { }
 
-  getDepartments(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/departments`);
+  getDepartments(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/departments?idClient=${idClient}`);
   }
 
-  getDesignations(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/designations`);
+  getDesignations(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/designations?idClient=${idClient}`);
   }
 
-  getGenders(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/genders`);
+  getGenders(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/genders?idClient=${idClient}`);
   }
 
-  getReligions(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/religions`);
+  getReligions(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/religions?idClient=${idClient}`);
   }
 
-  getEmployeeTypes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/employeetypes`);
+  getEmployeeTypes(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/employeetypes?idClient=${idClient}`);
   }
 
-  getJobTypes(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/jobtypes`);
+  getJobTypes(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/jobtypes?idClient=${idClient}`);
   }
 
-  getMaritalStatus(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/marital-status`);
+  getMaritalStatus(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/marital-status?idClient=${idClient}`);
   }
 
-  getWeekOff(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/week-off`);
+  getWeekOff(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/week-off?idClient=${idClient}`);
   }
 
-  getSections(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/sections`);
+  getSections(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/sections?idClient=${idClient}`);
   }
 }

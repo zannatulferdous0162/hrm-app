@@ -1,4 +1,5 @@
-﻿using HRM_Api.Models;
+﻿using HRM_Api.DTOs;
+using HRM_Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,83 +17,136 @@ namespace HRM_Api.Controllers
         }
 
         [HttpGet("departments")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDepartments()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetDepartments(int idClient)
         {
             var data = await _context.Departments
-                .Select(d => new { d.Id, d.DepartName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(d => new DropDownDTO
+                {
+                    Value = d.Id,
+                    Text = d.DepartName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("designations")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDesignations()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetDesignations(int idClient)
         {
             var data = await _context.Designations
-                .Select(d => new { d.Id, d.DesignationName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(d => new DropDownDTO
+                {
+                    Value = d.Id,
+                    Text = d.DesignationName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("genders")]
-        public async Task<ActionResult<IEnumerable<object>>> GetGenders()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetGenders(int idClient)
         {
             var data = await _context.Genders
-                .Select(g => new { g.Id, g.GenderName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(g => new DropDownDTO
+                {
+                    Value = g.Id,
+                    Text = g.GenderName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("religions")]
-        public async Task<ActionResult<IEnumerable<object>>> GetReligions()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetReligions(int idClient)
         {
             var data = await _context.Religions
-                .Select(r => new { r.Id, r.ReligionName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(r => new DropDownDTO
+                {
+                    Value = r.Id,
+                    Text = r.ReligionName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
-        
         [HttpGet("employeetypes")]
-        public async Task<ActionResult<IEnumerable<object>>> GetEmployeeTypes()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetEmployeeTypes(int idClient)
         {
             var data = await _context.EmployeeTypes
-                .Select(et => new { et.Id, et.TypeName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(et => new DropDownDTO
+                {
+                    Value = et.Id,
+                    Text = et.TypeName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("jobtypes")]
-        public async Task<ActionResult<IEnumerable<object>>> GetJobTypes()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetJobTypes(int idClient)
         {
             var data = await _context.JobTypes
-                .Select(jt => new { jt.Id, jt.JobTypeName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(jt => new DropDownDTO
+                {
+                    Value = jt.Id,
+                    Text = jt.JobTypeName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("marital-status")]
-        public async Task<ActionResult<IEnumerable<object>>> GetMaritalStatus()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetMaritalStatus(int idClient)
         {
             var data = await _context.MaritalStatuses
-                .Select(ms => new { ms.Id, ms.MaritalStatusName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(ms => new DropDownDTO
+                {
+                    Value = ms.Id,
+                    Text = ms.MaritalStatusName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("week-off")]
-        public async Task<ActionResult<IEnumerable<object>>> GetWeekOff()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetWeekOff(int idClient)
         {
             var data = await _context.WeekOffs
-                .Select(wo => new { wo.Id, wo.WeekOffDay })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(wo => new DropDownDTO
+                {
+                    Value = wo.Id,
+                    Text = wo.WeekOffDay ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }
 
         [HttpGet("sections")]
-        public async Task<ActionResult<IEnumerable<object>>> GetSections()
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetSections(int idClient)
         {
             var data = await _context.Sections
-                .Select(s => new { s.Id, s.SectionName })
+                .AsNoTracking()
+                .Where(i => i.IdClient == idClient)
+                .Select(s => new DropDownDTO
+                {
+                    Value = s.Id,
+                    Text = s.SectionName ?? string.Empty
+                })
                 .ToListAsync();
             return Ok(data);
         }

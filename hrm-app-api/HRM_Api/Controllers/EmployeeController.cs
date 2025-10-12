@@ -55,31 +55,25 @@ namespace HRM_Api.Controllers
                     MaritalStatusName = e.MaritalStatus != null ? e.MaritalStatus.MaritalStatusName : null,
                     ContactNo = e.ContactNo,
                     NationalIdentificationNumber = e.NationalIdentificationNumber,
-                    HasAttendenceBonus = e.HasAttendenceBonus,
+                  
                     HasOvertime = e.HasOvertime,
                     IsActive = e.IsActive,
-                    SetDate = e.SetDate,
-                    CreatedBy = e.CreatedBy,
-                    EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null ,
+                  
+                    //EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null ,
 
-                    EmployeeEducationInfos = e.EmployeeEducationInfos.Select(s => new EducationInfoDto
+                    EmployeeEducationInfos = e.EmployeeEducationInfos.Select(ed => new EducationInfoDto
                     {
-                        Id = s.Id,
-                        IdClient = s.IdClient,
-                        InstituteName = s.InstituteName,
-                        IdEducationLevel = s.IdEducationLevel,
-                        IdEducationExamination = s.IdEducationExamination,
-                        IdEducationResult = s.IdEducationResult,
-                        Cgpa = s.Cgpa,
-                        ExamScale = s.ExamScale,
-                        Marks = s.Marks,
-                        Major = s.Major,
-                        PassingYear = s.PassingYear,
-                        IsForeignInstitute = s.IsForeignInstitute,
-                        Duration = s.Duration,
-                        Achievement = s.Achievement,
-                        SetDate = s.SetDate
-                    }).ToList()
+                        Id = ed.Id,
+                        IdClient = e.IdClient,
+                        InstituteName = ed.InstituteName,
+                        //IdEducationLevel = ed.IdEducationLevel,
+                        IdEducationExamination = ed.IdEducationExamination,
+                        IdEducationResult = ed.IdEducationResult,
+                        Cgpa = ed.Cgpa,
+                        ExamScale = ed.ExamScale,
+                        PassingYear = ed.PassingYear,
+                        Achievement = ed.Achievement
+                    }).ToList(),
 
                 })
                 .ToListAsync();
@@ -162,7 +156,7 @@ namespace HRM_Api.Controllers
                     IdDepartment = dto.IdDepartment,
                     IdSection = dto.IdSection,
                     IdDesignation = dto.IdDesignation,
-                    Address = dto.Address,
+                    //Address = dto.Address,
                     PresentAddress = dto.PresentAddress,
                     IdGender = dto.IdGender,
                     IdReligion = dto.IdReligion,

@@ -14,7 +14,6 @@ export interface EmployeeDto {
   sectionName?: string;
   idDesignation?: number | null;
   designation?: string;
-  address?: string;
   idGender?: number | null;
   genderName?: string;
   idReligion?: number | null;
@@ -26,7 +25,8 @@ export interface EmployeeDto {
   jobTypeName?: string;
   idEmployeeType?: number | null;
   typeName?: string;
-  presentAddress?: string;
+  CurrentAddress?: string;
+  address?: string; 
   nationalIdentificationNumber?: string;
   contactNo?: string;
   isActive?: boolean | null;
@@ -38,4 +38,10 @@ export interface EmployeeDto {
   maritalStatusName?: string;
   setDate?: Date | null;
   createdBy?: string;
+
+
+  //   employeeDocuments?: DocumentDto[];
+  // employeeEducationInfos?: EducationInfoDto[];
+  // employeeFamilyInfos?: EmployeefamilyInfoDto[];
+  // employeeProfessionalCertifications?: EmployeeProfessionalCertificationDto[];
 }
