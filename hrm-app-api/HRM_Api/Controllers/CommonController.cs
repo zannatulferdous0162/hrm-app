@@ -16,6 +16,41 @@ namespace HRM_Api.Controllers
             _context = context;
         }
 
+        [HttpGet("educationexaminations")]
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetEducationExaminations(int idClient)
+        {
+            var data = await _context.EducationExaminations
+                .AsNoTracking()
+                .Where(e => e.IdClient == idClient)
+                .Select(e => new DropDownDTO
+                {
+                    Value = e.Id,
+                    Text = e.ExamName ?? string.Empty
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
+
+
+        [HttpGet("educationlevels")]
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetEducationLevels(int idClient)
+        {
+            var data = await _context.EducationLevels
+                .AsNoTracking()
+                .Where(e => e.IdClient == idClient)
+                .Select(e => new DropDownDTO
+                {
+                    Value = e.Id,
+                    Text = e.EducationLevelName ?? string.Empty
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
+
+
+
         [HttpGet("departments")]
         public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetDepartments(int idClient)
         {
@@ -106,7 +141,7 @@ namespace HRM_Api.Controllers
             return Ok(data);
         }
 
-        [HttpGet("marital-status")]
+        [HttpGet("maritalstatus")]
         public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetMaritalStatus(int idClient)
         {
             var data = await _context.MaritalStatuses
@@ -121,7 +156,7 @@ namespace HRM_Api.Controllers
             return Ok(data);
         }
 
-        [HttpGet("week-off")]
+        [HttpGet("weekoff")]
         public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetWeekOff(int idClient)
         {
             var data = await _context.WeekOffs

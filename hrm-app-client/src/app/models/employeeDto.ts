@@ -1,3 +1,8 @@
+import { DocumentDto } from "./documentDto";
+import { EducationInfoDto } from "./educationInfoDto";
+import { EmployeefamilyInfoDto } from "./employeefamilyInfoDto";
+import { EmployeeProfessionalCertificationDto } from "./employeeProfessionalCertificationDto";
+
 export interface EmployeeDto {
   
   id: number;
@@ -36,12 +41,14 @@ export interface EmployeeDto {
   weekOffDay?: string;
   idMaritalStatus?: number | null;
   maritalStatusName?: string;
+   idEducationLevel?: number;
+  idEducationExamination?: number;
   setDate?: Date | null;
   createdBy?: string;
 
 
-  //   employeeDocuments?: DocumentDto[];
-  // employeeEducationInfos?: EducationInfoDto[];
-  // employeeFamilyInfos?: EmployeefamilyInfoDto[];
-  // employeeProfessionalCertifications?: EmployeeProfessionalCertificationDto[];
+    employeeDocuments?: DocumentDto[];
+  employeeEducationInfos?: EducationInfoDto[];
+  employeeFamilyInfos?: EmployeefamilyInfoDto[];
+  employeeProfessionalCertifications?: EmployeeProfessionalCertificationDto[];
 }

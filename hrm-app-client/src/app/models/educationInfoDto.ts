@@ -17,4 +17,5 @@ export interface EducationInfoDto {
   duration?: number | null;
   achievement?: string;
   setDate?: Date | null;
+  employeeEducationInfos?: EducationInfoDto[];
 }

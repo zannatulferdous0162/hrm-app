@@ -32,6 +32,11 @@ export class EmployeeComponent implements OnInit {
   weekOffList: dropDown[] = [];
   sectionList: dropDown[] = [];
   religionList: dropDown[] = [];
+  educationExaminationList: dropDown[] = [];
+ educationLevelList: dropDown[] = [];
+
+
+
 
    employeeDocuments?: DocumentDto[];
   employeeEducationInfos?: EducationInfoDto[];
@@ -81,24 +86,39 @@ export class EmployeeComponent implements OnInit {
   hasOvertime: [false],
   hasAttendenceBonus: [false],
   isActive: [true],
+  idEducationLevel: [''],
+  idEducationExamination: ['']
+  
+  
   
 });
 
   }
 
+  
   loadEmployees(): void {
-    this.loading = true;
-    this.employeeService.getAllEmployees(this.idClient).subscribe({
-      next: (data) => {
-        this.employees = data;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error loading employees:', err);
-      },
-    });
-  }
+  this.loading = true;
+  this.employeeService.getAllEmployees(this.idClient).subscribe({
+    next: (data) => {
+      this.employees = data;
+      this.loading = false;
+
+      
+      if (data.length > 0) {
+        const firstEmployee = data[1];
+
+        
+        const employeesWithEducation = data.filter(emp => 
+          emp.employeeEducationInfos && emp.employeeEducationInfos.length > 0
+        );
+      }
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error('Error loading employees:', err);
+    },
+  });
+}
 
   loadAllDropdowns(): void {
   this.getGenderList(this.idClient);
@@ -110,7 +130,31 @@ export class EmployeeComponent implements OnInit {
   this.getMaritalStatusList(this.idClient);
   this.getWeekOffList(this.idClient);
   this.getSectionList(this.idClient);
+  this.getEducationLevelList(this.idClient);
+  this.getEducationExaminationList(this.idClient);
 }
+
+
+getEducationExaminationList(idClient: number): void {
+  
+  this.commonService.getEducationExaminations(idClient).subscribe({
+    next: (data) => {
+      this.educationExaminationList = data;
+      
+    },
+  });
+}
+
+getEducationLevelList(idClient: number): void {
+  this.commonService.getEducationLevels(idClient).subscribe({
+    next: (data) => {
+      this.educationLevelList = data;
+      console.log('Education Level data:', this.educationLevelList);
+    }
+  });
+}
+
+
 
 getWeekOffList(idClient: number): void {
   this.commonService.getWeekOff(idClient).subscribe(data => {
@@ -173,7 +217,7 @@ getJobTypeList(idClient: number): void {
     });
   }
 
-  onSubmit(): void {
+  onAddClick(): void {
      console.log('Form submitted!');
    if (this.employeeForm.invalid) {
       return;
@@ -206,6 +250,15 @@ getJobTypeList(idClient: number): void {
     },
   });
 }
+onEditClick(): void {
+  console.log('Edit button clicked!');
+ 
+}
+
+onDeleteClick(): void {
+  console.log('Delete button clicked!');
+  
+}
 
   trackById(index: number, emp: EmployeeDto): number {
     return emp.id;
@@ -215,14 +268,37 @@ getJobTypeList(idClient: number): void {
   return dateString ? dateString.split('T')[0] : '';
 }
 
-selectEmployee(employee: EmployeeDto): void {
-  this.employeeForm.reset();
-  this.employeeForm.patchValue({
-    ...employee,
-    joiningDate: this.formatDate(employee.joiningDate as any),
-    birthDate: this.formatDate(employee.birthDate as any),
-  });
-  this.selectedEmployeeId = employee.id;
+
+
+  selectEmployee(employee: EmployeeDto): void {
+    this.employeeForm.reset();
+    this.employeeForm.patchValue({
+      ...employee,
+      joiningDate: this.formatDate(employee.joiningDate as any),
+      birthDate: this.formatDate(employee.birthDate as any),
+    });
+    this.selectedEmployeeId = employee.id;
+    this.selectedEmployee = employee;
+    this.loadEmployeeEducationData(employee);
+  }
+loadEmployeeEducationData(employee: EmployeeDto): void {
+  if (employee.employeeEducationInfos && employee.employeeEducationInfos.length > 0) {
+    const firstEducation = employee.employeeEducationInfos[0];
+    
+    this.employeeForm.patchValue({
+      idEducationLevel: firstEducation.idEducationLevel,
+      idEducationExamination: firstEducation.idEducationExamination
+    });
+    
+    console.log('Education Level set to:', firstEducation.idEducationLevel);
+    console.log('Education Examination set to:', firstEducation.idEducationExamination);
+  } else {
+   
+    this.employeeForm.patchValue({
+      idEducationLevel: '',
+      idEducationExamination: ''
+    });
+  }
 }
 
 

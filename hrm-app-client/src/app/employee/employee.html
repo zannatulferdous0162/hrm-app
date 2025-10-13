@@ -27,21 +27,26 @@
 
   <div class="col-lg-10 col-md-9 main-content">
       <div class="container-fluid h-100 py-3">
-        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="h-100 d-flex flex-column">
+
+          <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
+
           
         
 <div class="mb-3 pb-2 border-bottom">
   <div class="d-flex gap-2 flex-wrap align-items-center">
     <div class="ms-auto d-flex gap-2">
-         <button type="submit" class="btn btn-success btn-sm">
-        <i class="bi bi-plus-circle"></i> Add
-      </button>
-      <button type="button" class="btn btn-warning btn-sm">
-        <i class="bi bi-pencil"></i> Edit
-      </button>
-      <button type="button" class="btn btn-danger btn-sm">
-        <i class="bi bi-trash"></i> Delete
-      </button>   
+        <button type="button" class="btn btn-success btn-sm" (click)="onAddClick()">
+  <i class="bi bi-plus-circle"></i> Add
+</button>
+
+     <button type="button" class="btn btn-warning btn-sm" (click)="onEditClick()">
+  <i class="bi bi-pencil"></i> Edit
+</button>
+
+<button type="button" class="btn btn-danger btn-sm" (click)="onDeleteClick()">
+  <i class="bi bi-trash"></i> Delete
+</button>
+  
     </div>
   </div>
 </div>
@@ -129,6 +134,28 @@
     </option>
   </select>
 </div>
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Education Level</label>
+  <select formControlName="idEducationLevel" class="form-select form-select-sm">
+    <option value="">-- Select Education Level --</option>
+    <option *ngFor="let level of educationLevelList" [value]="level.value">
+      {{ level.text }}
+    </option>
+  </select>
+</div>
+
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Education Examination</label>
+  <select formControlName="idEducationExamination" class="form-select form-select-sm">
+    <option value="">-- Select Examination --</option>
+    <option *ngFor="let exam of educationExaminationList" [value]="exam.value">
+      {{ exam.text }}
+    </option>
+  </select>
+</div>
+
 
 <div class="col-xl-3 col-lg-4 col-md-6">
   <label class="form-label fw-semibold">Religion</label>
@@ -290,40 +317,37 @@
                 </div>
               </div>
               
+<div class="col-12 col-lg-6">
+    <div class="card h-100">
+        <div class="card-header bg-primary text-white py-2">
+            <h6 class="mb-0">Education Information</h6>
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Degree</th>
+                        <th>Institution</th>
+                        <th>Passing Year</th>
+                        <th>CGPA</th>
+                        <th>Achievement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let education of selectedEmployee?.employeeEducationInfos">
+                        <!-- <td>{{ education.educationLevelName }}</td> -->
+                       <!-- <td>{{ getEducationLevel(education.idEducationLevel) }}</td> -->
 
-              <div class="col-12 col-lg-6">
-                <div class="card h-100">
-                  <div class="card-header bg-primary text-white py-2">
-                    <h6 class="mb-0">Education Information</h6>
-                  </div>
-                  <div class="card-body">
-                    <table class="table table-sm table-striped table-hover">
-                      <thead>
-                        <tr>
-                          <th>Degree</th>
-                          <th>Institution</th>
-                          <th>Year</th>
-                          <th>Cgpa</th>
-                           <th>PassingYear</th>
-                          <th>Achievement</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                       <tr *ngFor="let education of selectedEmployee?.employeeEducationInfos">
-                          <td>{{ education.educationLevelName }}</td>
-                          <td>{{ education.instituteName }}</td>
-                          <td>{{ education.examinationName }}</td>
-                          <td>{{ education.resultName }} ({{ education.cgpa }})</td>
-                          <td>{{ education.passingYear }}</td>
-                        </tr>
-                        <tr *ngIf="!selectedEmployee?.employeeEducationInfos?.length">
-                          <td colspan="5" class="text-center text-muted">No education information available</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+                        <td>{{ education.instituteName }}</td>
+                        <td>{{ education.passingYear }}</td>
+                        <td>{{ education.cgpa }}</td>
+                        <td>{{ education.achievement }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
             </div>
           </div>
         </form>

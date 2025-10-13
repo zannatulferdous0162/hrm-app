@@ -11,6 +11,16 @@ export class CommonService {
 
   constructor(private http: HttpClient) { }
 
+
+ 
+  getEducationExaminations(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/educationexaminations?idClient=${idClient}`);
+  }
+
+  getEducationLevels(idClient: number): Observable<dropDown[]> {
+    return this.http.get<dropDown[]>(`${this.apiUrl}/educationlevels?idClient=${idClient}`);
+  }
+
   getDepartments(idClient: number): Observable<dropDown[]> {
     return this.http.get<dropDown[]>(`${this.apiUrl}/departments?idClient=${idClient}`);
   }
@@ -36,11 +46,11 @@ export class CommonService {
   }
 
   getMaritalStatus(idClient: number): Observable<dropDown[]> {
-    return this.http.get<dropDown[]>(`${this.apiUrl}/marital-status?idClient=${idClient}`);
+    return this.http.get<dropDown[]>(`${this.apiUrl}/maritalstatus?idClient=${idClient}`);
   }
 
   getWeekOff(idClient: number): Observable<dropDown[]> {
-    return this.http.get<dropDown[]>(`${this.apiUrl}/week-off?idClient=${idClient}`);
+    return this.http.get<dropDown[]>(`${this.apiUrl}/weekoff?idClient=${idClient}`);
   }
 
   getSections(idClient: number): Observable<dropDown[]> {

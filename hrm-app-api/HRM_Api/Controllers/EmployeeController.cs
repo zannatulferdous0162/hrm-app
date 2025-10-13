@@ -66,7 +66,7 @@ namespace HRM_Api.Controllers
                         Id = ed.Id,
                         IdClient = e.IdClient,
                         InstituteName = ed.InstituteName,
-                        //IdEducationLevel = ed.IdEducationLevel,
+                        IdEducationLevel = ed.IdEducationLevel,
                         IdEducationExamination = ed.IdEducationExamination,
                         IdEducationResult = ed.IdEducationResult,
                         Cgpa = ed.Cgpa,
