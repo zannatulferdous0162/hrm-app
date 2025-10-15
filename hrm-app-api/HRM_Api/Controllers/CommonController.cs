@@ -15,7 +15,38 @@ namespace HRM_Api.Controllers
         {
             _context = context;
         }
+        [HttpGet("relationships")]
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetRelationships(int idClient)
+        {
+            var data = await _context.Relationships
+                .AsNoTracking()
+                .Where(r => r.IdClient == idClient)
+                .Select(r => new DropDownDTO
+                {
+                    Value = r.Id,
+                    Text = r.RelationName ?? string.Empty
+                })
+                .ToListAsync();
 
+            return Ok(data);
+        }
+
+
+        [HttpGet("educationresults")]
+        public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetEducationResults(int idClient)
+        {
+            var data = await _context.EducationResults
+                .AsNoTracking()
+                .Where(e => e.IdClient == idClient)
+                .Select(e => new DropDownDTO
+                {
+                    Value = e.Id,
+                    Text = e.ResultName ?? string.Empty
+                })
+                .ToListAsync();
+
+            return Ok(data);
+        }
         [HttpGet("educationexaminations")]
         public async Task<ActionResult<IEnumerable<DropDownDTO>>> GetEducationExaminations(int idClient)
         {

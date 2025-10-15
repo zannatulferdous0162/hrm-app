@@ -42,6 +42,7 @@
 
         public IFormFile? ProfileFile { get; set; }
         public string? EmployeeImageBase { get; set; }
+        public byte[]? EmployeeImage { get; set; }
 
         public List<DocumentDto> EmployeeDocuments { get; set; } = [];
         public List<EducationInfoDto> EmployeeEducationInfos { get; set; } = [];

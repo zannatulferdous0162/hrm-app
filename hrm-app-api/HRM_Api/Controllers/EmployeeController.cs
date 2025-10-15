@@ -1,7 +1,9 @@
 ﻿using HRM_Api.DTOs;
 using HRM_Api.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Net.Sockets;
 
 namespace HRM_Api.Controllers
@@ -55,11 +57,11 @@ namespace HRM_Api.Controllers
                     MaritalStatusName = e.MaritalStatus != null ? e.MaritalStatus.MaritalStatusName : null,
                     ContactNo = e.ContactNo,
                     NationalIdentificationNumber = e.NationalIdentificationNumber,
-                  
+
                     HasOvertime = e.HasOvertime,
                     IsActive = e.IsActive,
-                  
-                    //EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null ,
+
+                    EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null ,
 
                     EmployeeEducationInfos = e.EmployeeEducationInfos.Select(ed => new EducationInfoDto
                     {
@@ -74,6 +76,44 @@ namespace HRM_Api.Controllers
                         PassingYear = ed.PassingYear,
                         Achievement = ed.Achievement
                     }).ToList(),
+
+                    EmployeeProfessionalCertifications = e.EmployeeProfessionalCertifications.Select(pc => new EmployeeProfessionalCertificationDto
+                    {
+                        Id = pc.Id,
+                        IdClient = pc.IdClient,
+                        CertificationTitle = pc.CertificationTitle,
+                        CertificationInstitute = pc.CertificationInstitute,
+                        InstituteLocation = pc.InstituteLocation,
+                        FromDate = pc.FromDate,
+                        ToDate = pc.ToDate,
+                        SetDate = pc.SetDate
+                    }).ToList(),
+
+                    EmployeeFamilyInfos = e.EmployeeFamilyInfos.Select(f => new EmployeefamilyInfoDto
+                    {
+                        Id = f.Id,
+                        IdClient = f.IdClient,
+                        Name = f.Name,
+                        IdGender = f.IdGender,
+                        IdRelationship = f.IdRelationship,
+                        DateOfBirth = f.DateOfBirth,
+                        ContactNo = f.ContactNo,
+                        CurrentAddress = f.CurrentAddress,
+                        PermanentAddress = f.PermanentAddress,
+                        SetDate = f.SetDate
+                    }).ToList(),
+
+                    //EmployeeDocuments = e.EmployeeDocuments.Select(d => new DocumentDto
+                    //{
+                    //    Id = d.Id,
+                    //    IdClient = d.IdClient,
+                    //    DocumentName = d.DocumentName,
+                    //    FileName = d.FileName,
+                    //    UploadDate = d.UploadDate,
+                    //    UploadedFileExtention = d.UploadedFileExtention,
+                    //    UploadedFile = d.UploadedFile,
+                    //    SetDate = d.SetDate
+                    //}).ToList()
 
                 })
                 .ToListAsync();
@@ -123,7 +163,6 @@ namespace HRM_Api.Controllers
         //    }
         //}
 
-
         [HttpPost("createemployee")]
         public async Task<IActionResult> CreateEmployee([FromForm] EmployeeDTO dto)
         {
@@ -132,16 +171,29 @@ namespace HRM_Api.Controllers
 
             try
             {
-                
-                //byte[]? imageBytes = null;
-                //if (dto.ProfileFile != null && dto.ProfileFile.Length > 0)
-                //{
-                //    using (var ms = new MemoryStream())
-                //    {
-                //        await dto.ProfileFile.CopyToAsync(ms);
-                //        imageBytes = ms.ToArray();
-                //    }
-                //}
+                var form = await Request.ReadFormAsync();
+
+                if (form.TryGetValue("employeeEducationInfos", out var educationJson))
+                {
+                    dto.EmployeeEducationInfos = JsonConvert.DeserializeObject<List<EducationInfoDto>>(educationJson) ?? new List<EducationInfoDto>();
+                }
+
+                if (form.TryGetValue("employeeFamilyInfos", out var familyJson))
+                {
+                    dto.EmployeeFamilyInfos = JsonConvert.DeserializeObject<List<EmployeefamilyInfoDto>>(familyJson)
+                        ?? new List<EmployeefamilyInfoDto>();
+                }
+                if (form.TryGetValue("employeeProfessionalCertifications", out var certJson))
+                {
+                    dto.EmployeeProfessionalCertifications = JsonConvert.DeserializeObject<List<EmployeeProfessionalCertificationDto>>(certJson)
+                        ?? new List<EmployeeProfessionalCertificationDto>();
+                }
+                if (form.TryGetValue("employeeDocuments", out var documentJson))
+                {
+                    dto.EmployeeDocuments = JsonConvert.DeserializeObject<List<DocumentDto>>(documentJson)
+                        ?? new List<DocumentDto>();
+                }
+
 
 
                 var employee = new Employee
@@ -156,7 +208,7 @@ namespace HRM_Api.Controllers
                     IdDepartment = dto.IdDepartment,
                     IdSection = dto.IdSection,
                     IdDesignation = dto.IdDesignation,
-                    //Address = dto.Address,
+                    Address = dto.Address,
                     PresentAddress = dto.PresentAddress,
                     IdGender = dto.IdGender,
                     IdReligion = dto.IdReligion,
@@ -172,10 +224,62 @@ namespace HRM_Api.Controllers
                     IsActive = dto.IsActive ?? true,
                     SetDate = DateTime.Now,
                     CreatedBy = dto.CreatedBy ?? "System",
-                    //EmployeeImage = imageBytes
-                };
+                    //EmployeeImage = dto.EmployeeImageBase
 
-               
+                    EmployeeDocuments = dto.EmployeeDocuments.Select(d => new EmployeeDocument
+                    {
+                        IdClient = d.IdClient,
+                        DocumentName = d.DocumentName,
+                        FileName = d.FileName,
+                        UploadDate = DateTime.Now,
+                        UploadedFileExtention = d.UploadedFileExtention,
+                        UploadedFile = d.UploadedFile,
+                        SetDate = DateTime.Now
+                    }).ToList(),
+
+                    EmployeeFamilyInfos = dto.EmployeeFamilyInfos.Select(f => new EmployeeFamilyInfo
+                        {
+                            IdClient = f.IdClient,
+                            Name = f.Name,
+                            IdGender = f.IdGender,
+                            IdRelationship = f.IdRelationship,
+                            DateOfBirth = f.DateOfBirth,
+                            ContactNo = f.ContactNo,
+                            CurrentAddress = f.CurrentAddress,
+                            PermanentAddress = f.PermanentAddress,
+                            SetDate = DateTime.Now
+                        }).ToList(),
+
+                        EmployeeEducationInfos = dto.EmployeeEducationInfos.Select(e => new EmployeeEducationInfo
+                    {
+                        IdClient = e.IdClient,
+                        IdEducationLevel = e.IdEducationLevel,
+                        IdEducationExamination = e.IdEducationExamination,
+                        IdEducationResult = e.IdEducationResult,
+                        Cgpa = e.Cgpa,
+                        ExamScale = e.ExamScale,
+                        Marks = e.Marks,
+                        Major = e.Major,
+                        PassingYear = e.PassingYear,
+                        InstituteName = e.InstituteName,
+                        IsForeignInstitute = e.IsForeignInstitute,
+                        Duration = e.Duration,
+                        Achievement = e.Achievement,
+                        SetDate = DateTime.Now
+                    }).ToList(),
+
+                        EmployeeProfessionalCertifications = dto.EmployeeProfessionalCertifications.Select(p => new EmployeeProfessionalCertification
+                        {
+                            IdClient = p.IdClient,
+                            CertificationTitle = p.CertificationTitle,
+                            CertificationInstitute = p.CertificationInstitute,
+                            InstituteLocation = p.InstituteLocation,
+                            FromDate = p.FromDate,
+                            ToDate = p.ToDate,
+                            SetDate = DateTime.Now
+                        }).ToList(),
+                    };
+
                 _context.Employees.Add(employee);
                 await _context.SaveChangesAsync();
 
@@ -187,7 +291,7 @@ namespace HRM_Api.Controllers
             }
         }
 
-
+      
 
         //[HttpPut("updateemployee")]
         //public async Task<IActionResult> UpdateEmployee([FromForm] EmployeeDTO dto)

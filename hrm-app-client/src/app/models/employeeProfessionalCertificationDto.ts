@@ -1,6 +1,6 @@
 export interface EmployeeProfessionalCertificationDto {
-  id: number;
   idClient: number;
+   id: number;
   certificationTitle?: string;
   certificationInstitute?: string;
   instituteLocation?: string;

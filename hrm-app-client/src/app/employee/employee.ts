@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { EmployeeDto } from '../models/employeeDto';
 import { EmployeeService } from '../service/employeeServices';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonService } from '../service/commonService';
 import { dropDown } from '../models/drop-down';
 import { DocumentDto } from '../models/documentDto';
@@ -20,6 +20,8 @@ import { EmployeeProfessionalCertificationDto } from '../models/employeeProfessi
 })
 export class EmployeeComponent implements OnInit {
   employeeForm!: FormGroup;
+
+  
   employees: EmployeeDto[] = [];
   
 
@@ -34,7 +36,8 @@ export class EmployeeComponent implements OnInit {
   religionList: dropDown[] = [];
   educationExaminationList: dropDown[] = [];
  educationLevelList: dropDown[] = [];
-
+ educationResultList: dropDown[] = [];
+  relationshipList: dropDown[] = [];
 
 
 
@@ -87,12 +90,114 @@ export class EmployeeComponent implements OnInit {
   hasAttendenceBonus: [false],
   isActive: [true],
   idEducationLevel: [''],
-  idEducationExamination: ['']
-  
-  
+  idEducationExamination: [''],
+  educationInfos: this.fb.array([]),
+   certificationInfos: this.fb.array([]),
+   familyInfos: this.fb.array([])
+   
   
 });
+this.addEducation();
+ this.addCertification();
+  this.addFamily();
 
+  }
+  createFamilyForm(): FormGroup {
+  return this.fb.group({
+    id: [0],
+    name: [''],
+    idGender: [''],
+    idRelationship: ['' ],
+    dateOfBirth: [null],
+    contactNo: [''],
+    currentAddress: [''],
+    permanentAddress: [''],
+    setDate: [null]
+  });
+}
+
+addFamily(): void {
+  this.familyForms.push(this.createFamilyForm());
+}
+get certificationForms(): FormArray {
+    return this.employeeForm.get('certificationInfos') as FormArray;
+  }
+   get familyForms(): FormArray {
+    return this.employeeForm.get('familyInfos') as FormArray;
+  }
+   createCertificationForm(): FormGroup {
+    return this.fb.group({
+      id: [0],
+      certificationTitle: [''],
+      certificationInstitute: [''],
+      instituteLocation: [''],
+      fromDate: [''],
+      toDate: [''],
+      setDate: [null]
+    });
+  }
+
+  removeFamily(index: number): void {
+  if (this.familyForms.length > 1) {
+    this.familyForms.removeAt(index);
+  } else {
+    alert('At least one family entry is required');
+  }
+}
+//   formatDate(dateString: string | Date): string {
+//   if (!dateString) return '';
+  
+//   const date = new Date(dateString);
+//   if (isNaN(date.getTime())) return '';
+  
+//   return date.toISOString().split('T')[0];
+// }
+
+  addCertification(): void {
+    this.certificationForms.push(this.createCertificationForm());
+  }
+
+  
+
+   get educationForms(): FormArray {
+    return this.employeeForm.get('educationInfos') as FormArray;
+  }
+   removeCertification(index: number): void {
+    if (this.certificationForms.length > 1) {
+      this.certificationForms.removeAt(index);
+    } else {
+      alert('At least one certification entry is required');
+    }
+  }
+
+
+  createEducationForm(): FormGroup {
+    return this.fb.group({
+      id: [0],
+      instituteName: [''],
+      idEducationLevel: [],
+      idEducationExamination: [''],
+      idEducationResult: [''],
+      cgpa: [''],
+      examScale: [''],
+      marks: [''],
+      major: [''],
+      passingYear: [''],
+      isForeignInstitute: [false],
+      duration: [''],
+      achievement: ['']
+    });
+  }
+  addEducation(): void {
+    this.educationForms.push(this.createEducationForm());
+  }
+
+  removeEducation(index: number): void {
+    if (this.educationForms.length > 1) {
+      this.educationForms.removeAt(index);
+    } else {
+      alert('At least one education entry is required');
+    }
   }
 
   
@@ -132,8 +237,48 @@ export class EmployeeComponent implements OnInit {
   this.getSectionList(this.idClient);
   this.getEducationLevelList(this.idClient);
   this.getEducationExaminationList(this.idClient);
+ this.getEducationResultList(this.idClient); 
+ this.getRelationshipList(this.idClient);
+}
+getRelationshipList(idClient: number): void {
+  this.commonService.getRelationships(idClient).subscribe({
+    next: (data) => {
+      this.relationshipList = data;
+      console.log('Relationship data:', this.relationshipList);
+    },
+    error: (err) => {
+      console.error('Error loading relationships:', err);
+      this.relationshipList = [];
+    }
+  });
+}
+getEducationResultList(idClient: number): void {
+  this.commonService.getEducationResults(idClient).subscribe({
+    next: (data) => {
+      this.educationResultList = data;
+      console.log('Education Result data:', this.educationResultList);
+    },
+    error: (err) => {
+      console.error('Error loading education results:', err);
+      this.educationResultList = [];
+    }
+  });
 }
 
+getEducationResultName(resultId: number): string {
+  if (!resultId) return 'N/A';
+  const result = this.educationResultList.find(item => item.value === resultId);
+  return result ? result.text : 'N/A';
+}
+getEducationExaminationName(examinationId: number): string {
+    const exam = this.educationExaminationList.find(item => item.value === examinationId);
+    return exam ? exam.text : 'N/A';
+  }
+
+getEducationLevelName(educationLevelId: number): string {
+    const level = this.educationLevelList.find(item => item.value === educationLevelId);
+    return level ? level.text : 'N/A';
+  }
 
 getEducationExaminationList(idClient: number): void {
   
@@ -219,36 +364,92 @@ getJobTypeList(idClient: number): void {
 
   onAddClick(): void {
      console.log('Form submitted!');
-   if (this.employeeForm.invalid) {
-      return;
-    }
+     console.log('=== FAMILY INFO DEBUG ===');
+ 
+  console.log('Family Forms Count:', this.familyForms.length);
+ 
+  console.log('Family Forms Valid:', this.familyForms.valid);
+    if (this.employeeForm.invalid) {
+    // this.markFormGroupTouched();
+    alert('Please fill all required fields');
+    return;
+  }
 
   const formData = new FormData();
    const formValue = this.employeeForm.value;
   Object.keys(formValue).forEach(key => {
-    if (formValue[key] !== null && formValue[key] !== undefined) {
+    if (formValue[key] !== null && formValue[key] !== undefined && 
+         key !== 'educationInfos' && key !== 'certificationInfos' && key !== 'familyInfos') {
       if (key === 'joiningDate' || key === 'birthDate') {
         const dateValue = new Date(formValue[key]);
-        formData.append(key, dateValue.toISOString());
+        if (!isNaN(dateValue.getTime())) {
+          formData.append(key, dateValue.toISOString());
+        }
       } else {
         formData.append(key, formValue[key].toString());
       }
     }
   });
 
+  const educationInfos = this.educationForms.value;
+  console.log('Education Data:', educationInfos); 
+  
+  if (educationInfos && educationInfos.length > 0) {
+    formData.append('employeeEducationInfos', JSON.stringify(educationInfos));
+  }
+
+   
+  const certificationInfos = this.certificationForms.value;
+  console.log('Certification Data:', certificationInfos); 
+  
+  if (certificationInfos && certificationInfos.length > 0) {
+    formData.append('employeeProfessionalCertifications', JSON.stringify(certificationInfos));
+  }
+   const familyInfos = this.familyForms.value;
+  console.log('Family Data:', familyInfos);
+  if (familyInfos && familyInfos.length > 0) {
+    formData.append('employeeFamilyInfos', JSON.stringify(familyInfos));
+  }
+
+
   formData.append('idClient', this.idClient.toString());
 
   this.employeeService.createEmployee(formData).subscribe({
     next: (res) => {
-      alert(res.message || 'Employee created successfully');
+      alert(res || 'Employee created successfully');
       this.loadEmployees();
       this.employeeForm.reset();
+
+       this.clearEducationForms();
+      this.clearCertificationForms();
+      this.clearFamilyForms(); 
+      
+      this.addEducation();
+      this.addCertification();
+      this.addFamily(); 
     },
     error: (err) => {
        console.error('Error creating employee:', err);
         alert('Error creating employee: ' + err.error?.message);
     },
   });
+}
+private clearFamilyForms(): void {
+  while (this.familyForms.length > 0) {
+    this.familyForms.removeAt(0);
+  }
+}
+
+private clearCertificationForms(): void {
+  while (this.certificationForms.length > 0) {
+    this.certificationForms.removeAt(0);
+  }
+}
+
+private clearEducationForms(): void {
+  while (this.educationForms.length > 0) {
+    this.educationForms.removeAt(0);
+  }
 }
 onEditClick(): void {
   console.log('Edit button clicked!');
@@ -271,6 +472,7 @@ onDeleteClick(): void {
 
 
   selectEmployee(employee: EmployeeDto): void {
+     console.log('Certification Infos:', employee.employeeProfessionalCertifications);
     this.employeeForm.reset();
     this.employeeForm.patchValue({
       ...employee,
@@ -280,28 +482,136 @@ onDeleteClick(): void {
     this.selectedEmployeeId = employee.id;
     this.selectedEmployee = employee;
     this.loadEmployeeEducationData(employee);
+     this.loadEmployeeCertificationData(employee);
+      this.loadEmployeeFamilyData(employee); 
   }
-loadEmployeeEducationData(employee: EmployeeDto): void {
-  if (employee.employeeEducationInfos && employee.employeeEducationInfos.length > 0) {
-    const firstEducation = employee.employeeEducationInfos[0];
-    
-    this.employeeForm.patchValue({
-      idEducationLevel: firstEducation.idEducationLevel,
-      idEducationExamination: firstEducation.idEducationExamination
+  loadEmployeeFamilyData(employee: EmployeeDto): void {
+  // Clear existing family forms
+  while (this.familyForms.length > 0) {
+    this.familyForms.removeAt(0);
+  }
+
+  if (employee.employeeFamilyInfos && employee.employeeFamilyInfos.length > 0) {
+    employee.employeeFamilyInfos.forEach(family => {
+      const familyForm = this.createFamilyForm();
+      familyForm.patchValue({
+        id: family.id,
+        name: family.name,
+        idGender: family.idGender,
+        idRelationship: family.idRelationship,
+        dateOfBirth: family.dateOfBirth ? this.formatDate(family.dateOfBirth as any) : null,
+        contactNo: family.contactNo,
+        currentAddress: family.currentAddress,
+        permanentAddress: family.permanentAddress,
+        setDate: family.setDate ? this.formatDate(family.setDate as any) : null
+      });
+      this.familyForms.push(familyForm);
     });
-    
-    console.log('Education Level set to:', firstEducation.idEducationLevel);
-    console.log('Education Examination set to:', firstEducation.idEducationExamination);
   } else {
-   
-    this.employeeForm.patchValue({
-      idEducationLevel: '',
-      idEducationExamination: ''
-    });
+    this.addFamily();
   }
 }
 
 
+  loadEmployeeCertificationData(employee: EmployeeDto): void {
+ 
+  while (this.certificationForms.length > 0) {
+    this.certificationForms.removeAt(0);
+  }
 
+  if (employee.employeeProfessionalCertifications && employee.employeeProfessionalCertifications.length > 0) {
+    employee.employeeProfessionalCertifications.forEach(certification => {
+      const certificationForm = this.createCertificationForm();
+      certificationForm.patchValue({
+        id: certification.id,
+        certificationTitle: certification.certificationTitle,
+        certificationInstitute: certification.certificationInstitute,
+        instituteLocation: certification.instituteLocation,
+        fromDate: this.formatDate(certification.fromDate as any),
+        toDate: certification.toDate ? this.formatDate(certification.toDate as any) : null
+      });
+      this.certificationForms.push(certificationForm);
+    });
+  } else {
+    this.addCertification();
+  }
+}
+
+  
+  
+  loadEmployeeEducationData(employee: EmployeeDto): void {
+   
+    while (this.educationForms.length !== 0) {
+      this.educationForms.removeAt(0);
+    }
+
+    if (employee.employeeEducationInfos && employee.employeeEducationInfos.length > 0) {
+     
+      employee.employeeEducationInfos.forEach(education => {
+        const educationForm = this.createEducationForm();
+        educationForm.patchValue({
+          id: education.id,
+          instituteName: education.instituteName,
+          idEducationLevel: education.idEducationLevel,
+          idEducationExamination: education.idEducationExamination,
+          idEducationResult: education.idEducationResult,
+          cgpa: education.cgpa,
+          examScale: education.examScale,
+          marks: education.marks,
+          major: education.major,
+          passingYear: education.passingYear,
+          isForeignInstitute: education.isForeignInstitute,
+          duration: education.duration,
+          achievement: education.achievement
+        });
+        this.educationForms.push(educationForm);
+      });
+    } else {
+       this.employeeForm.patchValue({
+      idEducationLevel: '',
+      idEducationExamination: ''
+    });
+      
+      this.addEducation();
+    }
+  }
+  saveEducationInfo(): void {
+    if (this.educationForms.valid) {
+      const educationData = this.educationForms.value;
+      console.log('Education Data to Save:', educationData);
+      this.saveEducationToEmployee(educationData);
+      if (this.selectedEmployee) {
+        this.selectedEmployee.employeeEducationInfos = educationData;
+      }
+    } else {
+      this.markEducationFormsTouched();
+      alert('Please fill all required fields in education information');
+    }
+  }
+  private saveEducationToEmployee(educationData: any[]): void {
+  if (this.selectedEmployee) {
+    this.selectedEmployee.employeeEducationInfos = educationData;
+    
+    console.log('Education saved to employee:', this.selectedEmployee);
+    alert('Education information saved successfully!');
+  } else {
+   
+    this.employeeForm.patchValue({
+      employeeEducationInfos: educationData
+    });
+    alert('Education information added to form!');
+  }
+}
+
+
+   private markEducationFormsTouched(): void {
+    this.educationForms.controls.forEach(control => {
+      if (control instanceof FormGroup) {
+        Object.keys(control.controls).forEach(key => {
+          control.get(key)?.markAsTouched();
+        });
+      }
+    });
+  }
 
 }

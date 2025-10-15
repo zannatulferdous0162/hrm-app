@@ -22,7 +22,8 @@ export class EmployeeService {
     return this.http.get<EmployeeDto>(`${this.apiUrl}/${id}`, { params });
   }
 
-  createEmployee(formData: FormData): Observable<any> {
+
+createEmployee(formData: FormData): Observable<any> {
   return this.http.post(`${this.apiUrl}/createemployee`, formData);
 }
 

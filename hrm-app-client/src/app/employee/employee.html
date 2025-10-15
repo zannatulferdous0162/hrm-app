@@ -135,26 +135,6 @@
   </select>
 </div>
 
-<div class="col-xl-3 col-lg-4 col-md-6">
-  <label class="form-label fw-semibold">Education Level</label>
-  <select formControlName="idEducationLevel" class="form-select form-select-sm">
-    <option value="">-- Select Education Level --</option>
-    <option *ngFor="let level of educationLevelList" [value]="level.value">
-      {{ level.text }}
-    </option>
-  </select>
-</div>
-
-
-<div class="col-xl-3 col-lg-4 col-md-6">
-  <label class="form-label fw-semibold">Education Examination</label>
-  <select formControlName="idEducationExamination" class="form-select form-select-sm">
-    <option value="">-- Select Examination --</option>
-    <option *ngFor="let exam of educationExaminationList" [value]="exam.value">
-      {{ exam.text }}
-    </option>
-  </select>
-</div>
 
 
 <div class="col-xl-3 col-lg-4 col-md-6">
@@ -240,31 +220,136 @@
 
             
 
-            <div class="row mt-4 g-3">
-              <div class="col-12 col-lg-6">
-                <div class="card h-100">
-                  <div class="card-header bg-primary text-white py-2">
-                    <h6 class="mb-0">Family Information</h6>
-                  </div>
-                  <div class="card-body">
-                     <table class="table table-sm table-striped table-hover">
-                      <thead>
+      <div class="col-12 col-lg-12">
+    <div class="card h-100">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Family Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addFamily()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
                         <tr>
-                          <th>Name</th>
-                          <th>Relation</th>
-                          <th>Contact</th>
-                           <th>CurrentAddress</th>
-                           <th>PermanentAddress</th>
+                            <th>Name *</th>
+                            <th>Gender *</th>
+                            <th>Relationship *</th>
+                            <th>Date of Birth</th>
+                            <th>Contact No</th>
+                            <th>Current Address</th>
+                            <th>Permanent Address</th>
+                            <th>Set Date</th>
+                            <th>Action</th>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td>Sample 1</td><td>Father</td><td>0123456789</td><td>Mirpur 11</td><td>Mirpur 11</td></tr>
-                        <tr><td>Sample 2</td><td>Mother</td><td>0123456789</td><td>Mirpur 11</td><td>Mirpur 11</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+                    </thead>
+                    <tbody formArrayName="familyInfos">
+                        <tr *ngFor="let family of familyForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="family-form-row">
+                            
+                            <!-- Name -->
+                            <td>
+                                <input formControlName="name" 
+                                       class="form-control form-control-sm border-0" 
+                                       placeholder="Enter name" />
+                                <div *ngIf="familyForms.at(i).get('name')?.invalid && familyForms.at(i).get('name')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                            <!-- Gender -->
+                            <td>
+                                <select formControlName="idGender" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let gender of genderList" 
+                                            [value]="gender.value">
+                                        {{ gender.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="familyForms.at(i).get('idGender')?.invalid && familyForms.at(i).get('idGender')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                            <!-- Relationship -->
+                            <td>
+                                <select formControlName="idRelationship" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let relationship of relationshipList" 
+                                            [value]="relationship.value">
+                                        {{ relationship.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="familyForms.at(i).get('idRelationship')?.invalid && familyForms.at(i).get('idRelationship')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                            <!-- Date of Birth -->
+                            <td>
+                                <input type="date" 
+                                       formControlName="dateOfBirth" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                            <!-- Contact No -->
+                            <td>
+                                <input formControlName="contactNo" 
+                                       class="form-control form-control-sm border-0" 
+                                       placeholder="Contact number" />
+                            </td>
+                            
+                            <!-- Current Address -->
+                            <td>
+                                <textarea formControlName="currentAddress" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          placeholder="Current address"
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                            
+                            <!-- Permanent Address -->
+                            <td>
+                                <textarea formControlName="permanentAddress" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          placeholder="Permanent address"
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                            
+                            <!-- Set Date -->
+                            <td>
+                                <input type="date" 
+                                       formControlName="setDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                            <!-- Action -->
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeFamily(i)" 
+                                        [disabled]="familyForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>          
+        </div>
+    </div>
+</div>
 
 
                <div class="col-12 col-lg-6">
@@ -293,65 +378,274 @@
               </div>
               
 
-                 <div class="col-12 col-lg-6">
-                <div class="card h-100">
-                  <div class="card-header bg-secondary text-white py-2">
-                    <h6 class="mb-0">EmployeeProfessionalCertification</h6>
-                  </div>
-                  <div class="card-body">
-                    <table class="table table-sm table-striped table-hover">
-                      <thead>
-                        <tr>
-                          <th>CertificationTitle</th>
-                          <th>CertificationInstitute</th>
-                          <th>FromDate</th>
-                          <th>ToDate</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                         <tr><td>Sample 2</td><td>PDF</td><td>11/1/2024</td><td>11/1/2024</td></tr>
-                        <tr><td>Sample 2</td><td>PDF</td><td>11/1/2024</td><td>11/1/2024</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              
-<div class="col-12 col-lg-6">
+<div class="col-12 col-lg-12 mt-3">
     <div class="card h-100">
-        <div class="card-header bg-primary text-white py-2">
-            <h6 class="mb-0">Education Information</h6>
+        <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Professional Certification</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addCertification()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-sm table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Degree</th>
-                        <th>Institution</th>
-                        <th>Passing Year</th>
-                        <th>CGPA</th>
-                        <th>Achievement</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let education of selectedEmployee?.employeeEducationInfos">
-                        <!-- <td>{{ education.educationLevelName }}</td> -->
-                       <!-- <td>{{ getEducationLevel(education.idEducationLevel) }}</td> -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Certification Title</th>
+                            <th>Institute Name</th>
+                            <th>Institute Location</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="certificationInfos">
+                        <tr *ngFor="let certification of certificationForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="certification-form-row">
+                            
+                       
+                            <td>
+                                <input formControlName="certificationTitle" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                    
+                            <td>
+                                <input formControlName="certificationInstitute" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input formControlName="instituteLocation" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                          
+                            <td>
+                                <input type="date" 
+                                       formControlName="fromDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="date" 
+                                       formControlName="toDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                        
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeCertification(i)" 
+                                        [disabled]="certificationForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                        <td>{{ education.instituteName }}</td>
-                        <td>{{ education.passingYear }}</td>
-                        <td>{{ education.cgpa }}</td>
-                        <td>{{ education.achievement }}</td>
-                    </tr>
-                </tbody>
-            </table>
+
+<div class="col-12 col-lg-12">
+    <div class="card h-100">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Education Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addEducation()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+              
+            </div>
+        </div>
+        <div class="card-body p-0">
+           
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Institute Name *</th>
+                            <th>Education Level *</th>
+                            <th>Examination *</th>
+                            <th>Result *</th>
+                            <th>Passing Year *</th>
+                            <th>CGPA</th>
+                            <th>Major/Group</th>
+                            <th>Duration</th>
+                            <th>Marks</th>
+                            <th>Scale</th>
+                            <th>Foreign</th>
+                            <th >achievement</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="educationInfos">
+                        <tr *ngFor="let education of educationForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="education-form-row">
+                            
+                         
+                            <td>
+                                <input formControlName="instituteName" 
+                                       class="form-control form-control-sm border-0" 
+                                        />
+                                <div *ngIf="educationForms.at(i).get('instituteName')?.invalid && educationForms.at(i).get('instituteName')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                          
+                            <td>
+                                <select formControlName="idEducationLevel" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let level of educationLevelList" 
+                                            [value]="level.value">
+                                        {{ level.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationLevel')?.invalid && educationForms.at(i).get('idEducationLevel')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                           
+                            <td>
+                                <select formControlName="idEducationExamination" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let exam of educationExaminationList" 
+                                            [value]="exam.value">
+                                        {{ exam.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationExamination')?.invalid && educationForms.at(i).get('idEducationExamination')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                          
+                            <td>
+                                <select formControlName="idEducationResult" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let result of educationResultList" 
+                                            [value]="result.value">
+                                        {{ result.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationResult')?.invalid && educationForms.at(i).get('idEducationResult')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="passingYear" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                                <div *ngIf="educationForms.at(i).get('passingYear')?.invalid && educationForms.at(i).get('passingYear')?.touched" 
+                                     class="text-danger small">
+                                    Valid year
+                                </div>
+                            </td>
+                            
+                            
+                            <td>
+                                <input type="number" 
+                                       formControlName="cgpa" 
+                                       class="form-control form-control-sm border-0" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="5" 
+                                      />
+                            </td>
+                            
+                            
+                            <td>
+                                <input formControlName="major" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                          
+                            <td>
+                                <input type="number" 
+                                       formControlName="duration" 
+                                       class="form-control form-control-sm border-0" 
+                                       min="1" 
+                                       max="10" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="marks" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="examScale" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+          
+                            <td class="text-center">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       formControlName="isForeignInstitute" 
+                                       id="foreignInstitute{{i}}">
+                            </td>
+                             <td>
+                                <textarea formControlName="achievement" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                            
+                           
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeEducation(i)" 
+                                        [disabled]="educationForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>          
         </div>
     </div>
 </div>
             </div>
-          </div>
+         
         </form>
       </div>
     </div> 
   </div>
-</div>

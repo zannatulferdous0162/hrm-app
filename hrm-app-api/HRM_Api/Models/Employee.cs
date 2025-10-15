@@ -27,6 +27,7 @@ public partial class Employee
 
     public DateTime? BirthDate { get; set; }
 
+
     public DateTime? JoiningDate { get; set; }
 
     public int? IdGender { get; set; }

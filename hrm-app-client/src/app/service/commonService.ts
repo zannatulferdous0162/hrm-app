@@ -11,7 +11,14 @@ export class CommonService {
 
   constructor(private http: HttpClient) { }
 
+getRelationships(idClient: number): Observable<dropDown[]> {
+  return this.http.get<dropDown[]>(`${this.apiUrl}/relationships?idClient=${idClient}`);
+}
 
+
+getEducationResults(idClient: number): Observable<dropDown[]> {
+  return this.http.get<dropDown[]>(`${this.apiUrl}/educationresults?idClient=${idClient}`);
+}
  
   getEducationExaminations(idClient: number): Observable<dropDown[]> {
     return this.http.get<dropDown[]>(`${this.apiUrl}/educationexaminations?idClient=${idClient}`);
