@@ -19,7 +19,6 @@ namespace HRM_Api.Controllers
         }
 
         [HttpGet]
-        //[HttpGet("getallemployee")]
         public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAllEmployees([FromQuery] int idClient)
         {
             var employees = await _context.Employees
@@ -131,37 +130,6 @@ namespace HRM_Api.Controllers
 
 
 
-        //[HttpGet("getemployeedetail")]
-        //public async Task<ActionResult<EmployeeDTO>> GetEmployeeById([FromQuery] int idClient, [FromQuery] int id)
-        //{
-        //    try
-        //    {
-        //        var employees = await _context.Employees
-        //            .Where(e => e.IdClient == idClient && e.Id == id)
-        //            .Select(e => new EmployeeDTO
-        //            {
-        //                Id = e.Id,
-        //                IdClient = e.IdClient,
-        //                EmployeeName = e.EmployeeName,
-        //                FatherName = e.FatherName,
-        //                DepartmentName = e.Department != null ? e.Department.DepartName : null,
-        //                SectionName = e.Section != null ? e.Section.SectionName : null,
-        //                Designation = e.Designation != null ? e.Designation.DesignationName : null,
-        //                ContactNo = e.ContactNo != null ? e.ContactNo : null,
-
-        //            })
-        //            .FirstOrDefaultAsync();
-
-        //        if (employees == null)
-        //            return NotFound(new { Message = "Employee not found." });
-
-        //        return Ok(employees);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { Message = "Error while fetching employee detail.", Error = ex.Message });
-        //    }
-        //}
 
         [HttpPost("createemployee")]
         public async Task<IActionResult> CreateEmployee([FromForm] EmployeeDTO dto)
@@ -173,29 +141,40 @@ namespace HRM_Api.Controllers
             {
                 var form = await Request.ReadFormAsync();
 
-                if (form.TryGetValue("employeeEducationInfos", out var educationJson))
+            
+                dto.EmployeeEducationInfos = form.TryGetValue("employeeEducationInfos", out var eduJson)
+                    ? JsonConvert.DeserializeObject<List<EducationInfoDto>>(eduJson) ?? new List<EducationInfoDto>()
+                    : new List<EducationInfoDto>();
+
+                dto.EmployeeFamilyInfos = form.TryGetValue("employeeFamilyInfos", out var famJson)
+                    ? JsonConvert.DeserializeObject<List<EmployeefamilyInfoDto>>(famJson) ?? new List<EmployeefamilyInfoDto>()
+                    : new List<EmployeefamilyInfoDto>();
+
+                dto.EmployeeProfessionalCertifications = form.TryGetValue("employeeProfessionalCertifications", out var certJson)
+                    ? JsonConvert.DeserializeObject<List<EmployeeProfessionalCertificationDto>>(certJson) ?? new List<EmployeeProfessionalCertificationDto>()
+                    : new List<EmployeeProfessionalCertificationDto>();
+
+                dto.EmployeeDocuments = form.TryGetValue("employeeDocuments", out var docJson)
+                    ? JsonConvert.DeserializeObject<List<DocumentDto>>(docJson) ?? new List<DocumentDto>()
+                    : new List<DocumentDto>();
+
+              
+                var documentFiles = form.Files
+                    .Where(f => f.Name.StartsWith("documentFile_"))
+                    .OrderBy(f => f.Name)
+                    .ToList();
+
+                var employeeDocuments = await ProcessDocumentFilesAsync(dto.EmployeeDocuments, documentFiles);
+
+              
+                byte[]? employeeImageBytes = null;
+                var profileFile = form.Files.FirstOrDefault(f => f.Name == "profileImage");
+                if (profileFile != null && profileFile.Length > 0)
                 {
-                    dto.EmployeeEducationInfos = JsonConvert.DeserializeObject<List<EducationInfoDto>>(educationJson) ?? new List<EducationInfoDto>();
+                    employeeImageBytes = await ConvertFileToByteArrayAsync(profileFile);
                 }
 
-                if (form.TryGetValue("employeeFamilyInfos", out var familyJson))
-                {
-                    dto.EmployeeFamilyInfos = JsonConvert.DeserializeObject<List<EmployeefamilyInfoDto>>(familyJson)
-                        ?? new List<EmployeefamilyInfoDto>();
-                }
-                if (form.TryGetValue("employeeProfessionalCertifications", out var certJson))
-                {
-                    dto.EmployeeProfessionalCertifications = JsonConvert.DeserializeObject<List<EmployeeProfessionalCertificationDto>>(certJson)
-                        ?? new List<EmployeeProfessionalCertificationDto>();
-                }
-                if (form.TryGetValue("employeeDocuments", out var documentJson))
-                {
-                    dto.EmployeeDocuments = JsonConvert.DeserializeObject<List<DocumentDto>>(documentJson)
-                        ?? new List<DocumentDto>();
-                }
-
-
-
+              
                 var employee = new Employee
                 {
                     IdClient = dto.IdClient,
@@ -224,33 +203,24 @@ namespace HRM_Api.Controllers
                     IsActive = dto.IsActive ?? true,
                     SetDate = DateTime.Now,
                     CreatedBy = dto.CreatedBy ?? "System",
-                    //EmployeeImage = dto.EmployeeImageBase
+                    EmployeeImage = employeeImageBytes,
 
-                    EmployeeDocuments = dto.EmployeeDocuments.Select(d => new EmployeeDocument
+                    EmployeeDocuments = employeeDocuments,
+
+                    EmployeeFamilyInfos = dto.EmployeeFamilyInfos.Select(f => new EmployeeFamilyInfo
                     {
-                        IdClient = d.IdClient,
-                        DocumentName = d.DocumentName,
-                        FileName = d.FileName,
-                        UploadDate = DateTime.Now,
-                        UploadedFileExtention = d.UploadedFileExtention,
-                        UploadedFile = d.UploadedFile,
+                        IdClient = f.IdClient,
+                        Name = f.Name,
+                        IdGender = f.IdGender,
+                        IdRelationship = f.IdRelationship,
+                        DateOfBirth = f.DateOfBirth,
+                        ContactNo = f.ContactNo,
+                        CurrentAddress = f.CurrentAddress,
+                        PermanentAddress = f.PermanentAddress,
                         SetDate = DateTime.Now
                     }).ToList(),
 
-                    EmployeeFamilyInfos = dto.EmployeeFamilyInfos.Select(f => new EmployeeFamilyInfo
-                        {
-                            IdClient = f.IdClient,
-                            Name = f.Name,
-                            IdGender = f.IdGender,
-                            IdRelationship = f.IdRelationship,
-                            DateOfBirth = f.DateOfBirth,
-                            ContactNo = f.ContactNo,
-                            CurrentAddress = f.CurrentAddress,
-                            PermanentAddress = f.PermanentAddress,
-                            SetDate = DateTime.Now
-                        }).ToList(),
-
-                        EmployeeEducationInfos = dto.EmployeeEducationInfos.Select(e => new EmployeeEducationInfo
+                    EmployeeEducationInfos = dto.EmployeeEducationInfos.Select(e => new EmployeeEducationInfo
                     {
                         IdClient = e.IdClient,
                         IdEducationLevel = e.IdEducationLevel,
@@ -268,17 +238,17 @@ namespace HRM_Api.Controllers
                         SetDate = DateTime.Now
                     }).ToList(),
 
-                        EmployeeProfessionalCertifications = dto.EmployeeProfessionalCertifications.Select(p => new EmployeeProfessionalCertification
-                        {
-                            IdClient = p.IdClient,
-                            CertificationTitle = p.CertificationTitle,
-                            CertificationInstitute = p.CertificationInstitute,
-                            InstituteLocation = p.InstituteLocation,
-                            FromDate = p.FromDate,
-                            ToDate = p.ToDate,
-                            SetDate = DateTime.Now
-                        }).ToList(),
-                    };
+                    EmployeeProfessionalCertifications = dto.EmployeeProfessionalCertifications.Select(p => new EmployeeProfessionalCertification
+                    {
+                        IdClient = p.IdClient,
+                        CertificationTitle = p.CertificationTitle,
+                        CertificationInstitute = p.CertificationInstitute,
+                        InstituteLocation = p.InstituteLocation,
+                        FromDate = p.FromDate,
+                        ToDate = p.ToDate,
+                        SetDate = DateTime.Now
+                    }).ToList()
+                };
 
                 _context.Employees.Add(employee);
                 await _context.SaveChangesAsync();
@@ -287,11 +257,61 @@ namespace HRM_Api.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error creating employee: {ex}");
                 return StatusCode(500, new { Message = "Error creating employee", Error = ex.Message });
             }
         }
 
-      
+        private async Task<List<EmployeeDocument>> ProcessDocumentFilesAsync(List<DocumentDto> documentDtos, List<IFormFile> documentFiles)
+        {
+            var employeeDocuments = new List<EmployeeDocument>();
+
+            for (int i = 0; i < documentDtos.Count; i++)
+            {
+                var docDto = documentDtos[i];
+                byte[]? fileBytes = null;
+                string? fileExtension = null;
+
+                var matchingFile = documentFiles.FirstOrDefault(f => f.Name == $"documentFile_{i}");
+                if (matchingFile != null && matchingFile.Length > 0)
+                {
+                    fileBytes = await ConvertFileToByteArrayAsync(matchingFile);
+                    fileExtension = Path.GetExtension(matchingFile.FileName);
+                }
+
+                var employeeDocument = new EmployeeDocument
+                {
+                    IdClient = docDto.IdClient,
+                    DocumentName = docDto.DocumentName,
+                    FileName = string.IsNullOrEmpty(docDto.FileName)
+                        ? Path.GetFileNameWithoutExtension(matchingFile?.FileName ?? "")
+                        : docDto.FileName,
+                    UploadDate = DateTime.Now,
+                    UploadedFileExtention = fileExtension ?? docDto.UploadedFileExtention,
+                    UploadedFile = fileBytes,
+                    SetDate = DateTime.Now,
+                    CreatedBy = "System"
+                };
+
+                employeeDocuments.Add(employeeDocument);
+            }
+
+            return employeeDocuments;
+        }
+
+        private async Task<byte[]?> ConvertFileToByteArrayAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
+
+
+
+
 
         //[HttpPut("updateemployee")]
         //public async Task<IActionResult> UpdateEmployee([FromForm] EmployeeDTO dto)

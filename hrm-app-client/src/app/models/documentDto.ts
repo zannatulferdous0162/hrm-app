@@ -8,4 +8,5 @@ export interface DocumentDto {
   uploadedFileExtention?: string;
   uploadedFile?: Uint8Array | null;
   upFile?: File;
+  fileBase64?: string;
 }

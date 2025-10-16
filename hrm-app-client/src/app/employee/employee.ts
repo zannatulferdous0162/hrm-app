@@ -93,15 +93,30 @@ export class EmployeeComponent implements OnInit {
   idEducationExamination: [''],
   educationInfos: this.fb.array([]),
    certificationInfos: this.fb.array([]),
-   familyInfos: this.fb.array([])
+   familyInfos: this.fb.array([]),
+   documentInfos: this.fb.array([])
    
   
 });
+ this.addDocument();
 this.addEducation();
  this.addCertification();
   this.addFamily();
 
   }
+  createDocumentForm(): FormGroup {
+  return this.fb.group({
+    id: [0],
+    documentName: [''],
+    fileName: [''],
+    uploadDate: [new Date()],
+    uploadedFileExtention: [''],
+    upFile: [null],
+    fileBase64: ['']
+  });
+
+  
+}
   createFamilyForm(): FormGroup {
   return this.fb.group({
     id: [0],
@@ -119,6 +134,79 @@ this.addEducation();
 addFamily(): void {
   this.familyForms.push(this.createFamilyForm());
 }
+
+
+get documentForms(): FormArray {
+  return this.employeeForm.get('documentInfos') as FormArray;
+}
+addDocument(): void {
+  this.documentForms.push(this.createDocumentForm());
+}
+onFileSelected(event: any, index: number): void {
+  const file = event.target.files[0];
+  if (file) {
+    const documentForm = this.documentForms.at(index);
+    documentForm.patchValue({
+      fileName: file.name,
+      uploadedFileExtention: this.getFileExtension(file.name),
+      upFile: file
+    });
+
+ 
+    this.convertFileToBase64(file).then(base64 => {
+      documentForm.patchValue({
+        fileBase64: base64
+      });
+    });
+  }
+}
+
+private getFileExtension(filename: string): string {
+  return '.' + filename.split('.').pop()?.toLowerCase() || '';
+}
+hasDocumentsWithFiles(): boolean {
+  return this.documentForms.controls.some(doc => {
+    const fileBase64 = doc.get('fileBase64')?.value;
+    return fileBase64 && fileBase64 !== '';
+  });
+}
+private convertFileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
+}
+
+downloadDocument(document: any): void {
+  if (document.fileBase64) {
+    const link = document.createElement('a');
+    link.href = document.fileBase64;
+    link.download = document.fileName || 'document';
+    link.click();
+  }
+}
+viewDocument(document: any): void {
+  if (document.fileBase64) {
+    window.open(document.fileBase64, '_blank');
+  }
+}
+
+private clearDocumentForms(): void {
+  while (this.documentForms.length > 0) {
+    this.documentForms.removeAt(0);
+  }
+}
+removeDocument(index: number): void {
+  if (this.documentForms.length > 1) {
+    this.documentForms.removeAt(index);
+  } else {
+    alert('At least one document entry is required');
+  }
+}
+
+
 get certificationForms(): FormArray {
     return this.employeeForm.get('certificationInfos') as FormArray;
   }
@@ -144,14 +232,7 @@ get certificationForms(): FormArray {
     alert('At least one family entry is required');
   }
 }
-//   formatDate(dateString: string | Date): string {
-//   if (!dateString) return '';
-  
-//   const date = new Date(dateString);
-//   if (isNaN(date.getTime())) return '';
-  
-//   return date.toISOString().split('T')[0];
-// }
+
 
   addCertification(): void {
     this.certificationForms.push(this.createCertificationForm());
@@ -363,12 +444,7 @@ getJobTypeList(idClient: number): void {
   }
 
   onAddClick(): void {
-     console.log('Form submitted!');
-     console.log('=== FAMILY INFO DEBUG ===');
- 
-  console.log('Family Forms Count:', this.familyForms.length);
- 
-  console.log('Family Forms Valid:', this.familyForms.valid);
+
     if (this.employeeForm.invalid) {
     // this.markFormGroupTouched();
     alert('Please fill all required fields');
@@ -379,7 +455,7 @@ getJobTypeList(idClient: number): void {
    const formValue = this.employeeForm.value;
   Object.keys(formValue).forEach(key => {
     if (formValue[key] !== null && formValue[key] !== undefined && 
-         key !== 'educationInfos' && key !== 'certificationInfos' && key !== 'familyInfos') {
+         key !== 'educationInfos' && key !== 'certificationInfos' && key !== 'familyInfos' && key !== 'documentInfos') {
       if (key === 'joiningDate' || key === 'birthDate') {
         const dateValue = new Date(formValue[key]);
         if (!isNaN(dateValue.getTime())) {
@@ -410,6 +486,34 @@ getJobTypeList(idClient: number): void {
   if (familyInfos && familyInfos.length > 0) {
     formData.append('employeeFamilyInfos', JSON.stringify(familyInfos));
   }
+
+const documentInfos = this.documentForms.value.map((doc: any, index: number) => {
+ 
+    const { upFile, fileBase64, ...cleanDoc } = doc;
+    return cleanDoc;
+  });
+
+  console.log('Document Data:', documentInfos);
+  if (documentInfos && documentInfos.length > 0) {
+    formData.append('employeeDocuments', JSON.stringify(documentInfos));
+    
+  
+    this.documentForms.controls.forEach((docForm, index) => {
+      const fileControl = docForm.get('upFile');
+      if (fileControl && fileControl.value) {
+       
+        formData.append(`documentFile_${index}`, fileControl.value);
+      }
+    });
+  }
+
+ 
+  console.log('FormData contents:');
+  for (let pair of (formData as any).entries()) {
+    console.log(pair[0] + ', ' + (pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]));
+  }
+  
+
 
 
   formData.append('idClient', this.idClient.toString());
@@ -484,9 +588,37 @@ onDeleteClick(): void {
     this.loadEmployeeEducationData(employee);
      this.loadEmployeeCertificationData(employee);
       this.loadEmployeeFamilyData(employee); 
+      this.loadEmployeeDocumentData(employee);
   }
+
+
+loadEmployeeDocumentData(employee: EmployeeDto): void {
+ 
+  while (this.documentForms.length > 0) {
+    this.documentForms.removeAt(0);
+  }
+
+  if (employee.employeeDocuments && employee.employeeDocuments.length > 0) {
+    employee.employeeDocuments.forEach(document => {
+      const documentForm = this.createDocumentForm();
+      documentForm.patchValue({
+        id: document.id,
+        documentName: document.documentName,
+        fileName: document.fileName,
+        uploadDate: document.uploadDate ? this.formatDate(document.uploadDate as any) : new Date(),
+        uploadedFileExtention: document.uploadedFileExtention,
+        fileBase64: document.fileBase64
+      });
+      this.documentForms.push(documentForm);
+    });
+  } else {
+    this.addDocument();
+  }
+}
+  
+
   loadEmployeeFamilyData(employee: EmployeeDto): void {
-  // Clear existing family forms
+  
   while (this.familyForms.length > 0) {
     this.familyForms.removeAt(0);
   }
