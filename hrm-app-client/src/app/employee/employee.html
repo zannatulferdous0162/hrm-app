@@ -28,25 +28,49 @@
   <div class="col-lg-10 col-md-9 main-content">
       <div class="container-fluid h-100 py-3">
 
-          <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
+      <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
 
           
         
+
+<div class="col-lg-10 col-md-9 main-content">
+      <div class="container-fluid h-100 py-3">
+        <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
+
+        
+          
+          <div *ngIf="isEditMode" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+            <strong><i class="bi bi-pencil-square"></i> Edit Mode</strong> - You are currently editing employee data.
+            <button type="button" class="btn-close" (click)="onCancelEdit()"></button>
+          </div>
+
 <div class="mb-3 pb-2 border-bottom">
   <div class="d-flex gap-2 flex-wrap align-items-center">
     <div class="ms-auto d-flex gap-2">
-        <button type="button" class="btn btn-success btn-sm" (click)="onAddClick()">
-  <i class="bi bi-plus-circle"></i> Add
-</button>
+      <button type="button" class="btn btn-success btn-sm" (click)="onAddClick()" 
+              [disabled]="isEditMode">
+        <i class="bi bi-plus-circle"></i> Add
+      </button>
 
-     <button type="button" class="btn btn-warning btn-sm" (click)="onEditClick()">
-  <i class="bi bi-pencil"></i> Edit
-</button>
+      <button type="button" class="btn btn-warning btn-sm" (click)="onEditClick()" 
+              [disabled]="!selectedEmployee || isEditMode">
+        <i class="bi bi-pencil"></i> Edit
+      </button>
 
-<button type="button" class="btn btn-danger btn-sm" (click)="onDeleteClick()">
-  <i class="bi bi-trash"></i> Delete
-</button>
-  
+
+      <div *ngIf="isEditMode" class="d-flex gap-2">
+        <button type="button" class="btn btn-primary btn-sm" (click)="onUpdateClick()">
+          <i class="bi bi-check-circle"></i> Update
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onCancelEdit()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+      </div>
+
+      <button type="button" class="btn btn-danger btn-sm" (click)="onDeleteClick()" 
+              [disabled]="!selectedEmployee || isEditMode">
+        <i class="bi bi-trash"></i> Delete
+      </button>
     </div>
   </div>
 </div>
@@ -62,6 +86,30 @@
     Employee name is required
   </div>
 </div>
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Employee Image</label>
+  <input
+    type="file"
+    id="profileImage"
+    (change)="onProfileImageSelected($event)"
+    accept="image/*"
+    class="form-control form-control-sm"
+  />
+  
+  <div *ngIf="previewImage" class="mt-2 text-center">
+    <img
+      [src]="previewImage"
+      alt="Employee Photo"
+      width="120"
+      height="120"
+      style="border-radius: 8px; border: 1px solid #ccc;"
+    />
+    <div class="small text-muted mt-1">Preview</div>
+  </div>
+</div>
+
+
 
 <div class="col-xl-3 col-lg-4 col-md-6">
                 <label class="form-label fw-semibold">Employee Name Bangla *</label>
@@ -261,7 +309,7 @@
                             [formGroupName]="i" 
                             class="family-form-row">
                             
-                            <!-- Name -->
+                         
                             <td>
                                 <input formControlName="name" 
                                        class="form-control form-control-sm border-0" 
@@ -272,7 +320,8 @@
                                 </div>
                             </td>
                             
-                            <!-- Gender -->
+                   
+                            
                             <td>
                                 <select formControlName="idGender" 
                                         class="form-select form-select-sm border-0">
@@ -288,7 +337,8 @@
                                 </div>
                             </td>
                             
-                            <!-- Relationship -->
+                 
+                            
                             <td>
                                 <select formControlName="idRelationship" 
                                         class="form-select form-select-sm border-0">
@@ -304,21 +354,24 @@
                                 </div>
                             </td>
                             
-                            <!-- Date of Birth -->
+                         
+                            
                             <td>
                                 <input type="date" 
                                        formControlName="dateOfBirth" 
                                        class="form-control form-control-sm border-0" />
                             </td>
                             
-                            <!-- Contact No -->
+                     
+                            
                             <td>
                                 <input formControlName="contactNo" 
                                        class="form-control form-control-sm border-0" 
                                        placeholder="Contact number" />
                             </td>
                             
-                            <!-- Current Address -->
+                       
+                            
                             <td>
                                 <textarea formControlName="currentAddress" 
                                           class="form-control form-control-sm border-0" 
@@ -326,8 +379,8 @@
                                           placeholder="Current address"
                                           style="resize: vertical; min-height: 60px;"></textarea>
                             </td>
+                  
                             
-                            <!-- Permanent Address -->
                             <td>
                                 <textarea formControlName="permanentAddress" 
                                           class="form-control form-control-sm border-0" 
@@ -336,14 +389,16 @@
                                           style="resize: vertical; min-height: 60px;"></textarea>
                             </td>
                             
-                            <!-- Set Date -->
+                           
+                            
                             <td>
                                 <input type="date" 
                                        formControlName="setDate" 
                                        class="form-control form-control-sm border-0" />
                             </td>
                             
-                            <!-- Action -->
+                           
+                            
                             <td class="text-center">
                                 <button type="button" 
                                         class="btn btn-danger btn-sm" 
@@ -362,14 +417,107 @@
 </div>
 
 
-      <!-- Document Information Section -->
+      <!-- Document Information Table -->
 <div class="col-12 col-lg-12 mt-3">
     <div class="card h-100">
         <div class="card-header bg-warning text-white py-2 d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Document Information</h6>
             <div>
                 <button type="button" class="btn btn-success btn-sm me-2" (click)="addDocument()">
-                    <i class="bi bi-plus-circle"></i> Add Document
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            
+                            <th>Document Name *</th>
+                            <th>File Name *</th>
+                            <th>Upload Date</th>
+                            <th>File Extension</th>
+                            <th>File *</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="documentInfos">
+                        <tr *ngFor="let document of documentForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="document-form-row">
+                            
+                           
+                            
+                            <td>
+                                <input formControlName="documentName" 
+                                       class="form-control form-control-sm" 
+                                       placeholder="e.g., Passport, NID, Certificate" />
+                                <div *ngIf="documentForms.at(i).get('documentName')?.invalid && documentForms.at(i).get('documentName')?.touched" 
+                                     class="text-danger small">
+                                    Document name is required
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <input formControlName="fileName" 
+                                       class="form-control form-control-sm" 
+                                       placeholder="File name without extension" />
+                                <div *ngIf="documentForms.at(i).get('fileName')?.invalid && documentForms.at(i).get('fileName')?.touched" 
+                                     class="text-danger small">
+                                    File name is required
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <input type="date" 
+                                       formControlName="uploadDate" 
+                                       class="form-control form-control-sm" />
+                            </td>
+                            
+                            <td>
+                                <input formControlName="uploadedFileExtention" 
+                                       class="form-control form-control-sm bg-light" 
+                                       readonly 
+                                       placeholder="Auto-detected" />
+                            </td>
+                            
+                            <td>
+                                <input type="file" 
+                                       class="form-control form-control-sm" 
+                                       (change)="onFileSelected($event, i)"
+                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
+                                <small class="text-muted">Max: 10MB</small>
+                                <div *ngIf="documentFiles[i]" class="text-success small">
+                                    ✓ {{ documentFiles[i]?.name }}
+                                </div>
+                            </td>
+                            
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeDocument(i)" 
+                                        [disabled]="documentForms.length === 1"
+                                        title="Remove this document">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="col-12 col-lg-12 mt-3">
+  
+    <div class="card h-100">
+        <div class="card-header bg-warning text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Document Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addDocument()">
+                    <i class="bi bi-plus-circle"></i> Add Row
                 </button>
             </div>
         </div>
@@ -439,7 +587,7 @@
                             </td>
                             
                   
-                            <!-- Action -->
+                          
                             <td class="text-center">
                                 <button type="button" 
                                         class="btn btn-danger btn-sm" 
@@ -483,7 +631,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
               
 
 <div class="col-12 col-lg-12 mt-3">
@@ -756,4 +904,4 @@
         </form>
       </div>
     </div> 
-  </div>
+ 

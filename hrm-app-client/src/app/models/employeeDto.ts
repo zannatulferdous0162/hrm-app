@@ -45,6 +45,8 @@ export interface EmployeeDto {
   idEducationExamination?: number;
   setDate?: Date | null;
   createdBy?: string;
+  employeeImageBase?: string;
+  employeeImage?: Uint8Array | null;
 
 
     employeeDocuments?: DocumentDto[];
