@@ -39,7 +39,7 @@ export class EmployeeComponent implements OnInit {
  educationResultList: dropDown[] = [];
 relationshipList: dropDown[] = [];
 
-  // ==========
+
 selectedProfileFile?: File;
 previewImage?: string;
 documentFiles: (File | null)[] = [];
@@ -145,9 +145,7 @@ addFamily(): void {
 get documentForms(): FormArray {
   return this.employeeForm.get('documentInfos') as FormArray;
 }
-// addDocument(): void {
-//   this.documentForms.push(this.createDocumentForm());
-// }
+
 
 addDocument(documentData?: any): void {
   const documentForm = this.fb.group({
@@ -158,47 +156,23 @@ addDocument(documentData?: any): void {
     uploadDate: [documentData?.uploadDate || new Date().toISOString().split('T')[0]],
     uploadedFileExtention: [documentData?.uploadedFileExtention || ''],
     fileBase64: [documentData?.fileBase64 || null],
-    upFile: [null] // Add this control for file handling
+    upFile: [null] 
   });
 
   this.documentForms.push(documentForm);
-  this.documentFiles.push(null); // Initialize file reference array
+  this.documentFiles.push(null); 
   
   console.log(`Added document form at index: ${this.documentForms.length - 1}`);
 }
 
-// onFileSelected(event: any, index: number) {
-//   const file = event.target.files[0];
-//   if (file) {
-//     // Store file reference
-//     this.documentFiles[index] = file;
-    
-//     // Update form with file info
-//     const documentForm = this.documentForms.at(index);
-//     documentForm.patchValue({
-//       fileName: file.name.split('.').slice(0, -1).join('.'),
-//       uploadedFileExtention: '.' + file.name.split('.').pop()
-//     });
 
-//     // Create preview and convert to base64
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       documentForm.patchValue({
-//         fileBase64: reader.result
-//       });
-//     };
-//     reader.readAsDataURL(file);
-
-//     console.log(`File selected for document ${index}:`, file.name);
-//   }
-// }\]
 onFileSelected(event: any, index: number): void {
   const file = event.target.files[0];
   if (file) {
-    // Store file reference
+   
     this.documentFiles[index] = file;
     
-    // Update form with file info
+    
     const documentForm = this.documentForms.at(index);
     const fileNameWithoutExt = file.name.split('.').slice(0, -1).join('.');
     const fileExtension = '.' + file.name.split('.').pop();
@@ -206,10 +180,10 @@ onFileSelected(event: any, index: number): void {
     documentForm.patchValue({
       fileName: fileNameWithoutExt,
       uploadedFileExtention: fileExtension,
-      upFile: file // Store file in form control
+      upFile: file 
     });
 
-    // Create preview and convert to base64
+   
     const reader = new FileReader();
     reader.onload = () => {
       documentForm.patchValue({
@@ -226,12 +200,7 @@ onFileSelected(event: any, index: number): void {
 private getFileExtension(filename: string): string {
   return '.' + filename.split('.').pop()?.toLowerCase() || '';
 }
-// hasDocumentsWithFiles(): boolean {
-//   return this.documentForms.controls.some(doc => {
-//     const fileBase64 = doc.get('fileBase64')?.value;
-//     return fileBase64 && fileBase64 !== '';
-//   });
-// }
+
 
 hasDocumentsWithFiles(): boolean {
   return this.documentForms.controls.some(doc => doc.value.fileBase64);
@@ -267,7 +236,7 @@ private clearDocumentForms(): void {
 removeDocument(index: number): void {
   if (this.documentForms.length > 1) {
     this.documentForms.removeAt(index);
-    // Also remove the corresponding file from documentFiles array
+   
     this.documentFiles.splice(index, 1);
     console.log(`Removed document at index: ${index}`);
   } else {
@@ -566,17 +535,17 @@ getJobTypeList(idClient: number): void {
     }
 
     if (this.employeeForm.invalid) {
-    // this.markFormGroupTouched();
+  
     alert('Please fill all required fields');
     return;
   }
-console.log('=== STARTING EMPLOYEE CREATION ===');
-  console.log('Family Forms Count:', this.familyForms.length);
-  console.log('Document Forms Count:', this.documentForms.length);
-  console.log('Education Forms Count:', this.educationForms.length);
-  console.log('Certification Forms Count:', this.certificationForms.length);
 
-  // Validate forms
+
+this.educationForms.controls.forEach((edu, index) => {
+  
+    console.log(`Education ${index} values:`, edu.value);
+});
+ 
   const invalidForms = [];
 
     this.documentForms.controls.forEach((document, index) => {
@@ -626,26 +595,33 @@ console.log('=== STARTING EMPLOYEE CREATION ===');
         formData.append(key, formValue[key].toString());
       }
     }
+  
+this.educationForms.controls.forEach((edu, index) => {
+    console.log(`Education ${index} valid:`, edu.valid);
+    console.log(`Education ${index} values:`, edu.value);
+});
   });
 
 const educationInfos = this.educationForms.value.map((edu: any) => {
     return {
-      id: edu.id || 0,
-      idClient: this.idClient,
-      instituteName: edu.instituteName,
-      idEducationLevel: edu.idEducationLevel,
-      idEducationExamination: edu.idEducationExamination,
-      idEducationResult: edu.idEducationResult,
-      cgpa: edu.cgpa,
-      examScale: edu.examScale,
-      marks: edu.marks,
-      major: edu.major,
-      passingYear: edu.passingYear,
-      isForeignInstitute: edu.isForeignInstitute || false,
-      duration: edu.duration,
-      achievement: edu.achievement
+        id: edu.id || 0,
+        idClient: this.idClient,
+        instituteName: edu.instituteName,
+        idEducationLevel: edu.idEducationLevel,
+        idEducationExamination: edu.idEducationExamination,
+        idEducationResult: edu.idEducationResult,
+        cgpa: edu.cgpa,
+        examScale: edu.examScale,
+        marks: edu.marks,
+        major: edu.major,
+        passingYear: edu.passingYear,
+        isForeignInstitute: edu.isForeignInstitute || false,
+        duration: edu.duration,
+        achievement: edu.achievement
     };
-  });
+});
+
+
   
   if (educationInfos && educationInfos.length > 0) {
     formData.append('employeeEducationInfos', JSON.stringify(educationInfos));
@@ -691,7 +667,7 @@ const documentInfos = this.documentForms.value.map((doc: any, index: number) => 
   
    this.documentFiles.forEach((file, index) => {
       if (file) {
-        // Use exact naming convention that backend expects
+      
         formData.append(`documentFile_${index}`, file, file.name);
         console.log(`Appending document file ${index}:`, file.name, `as documentFile_${index}`);
       } else {
@@ -700,7 +676,7 @@ const documentInfos = this.documentForms.value.map((doc: any, index: number) => 
     });
   }
 
- // Append profile image if exists
+ 
   if (this.selectedProfileFile) {
     formData.append('profileImage', this.selectedProfileFile);
  
@@ -715,26 +691,7 @@ const documentInfos = this.documentForms.value.map((doc: any, index: number) => 
     console.log(pair[0] + ', ' + (pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]));
   }
 
-//   this.employeeService.createEmployee(formData).subscribe({
-//     next: (res) => {
-//       alert(res || 'Employee created successfully');
-//       this.loadEmployees();
-//       this.employeeForm.reset();
 
-//        this.clearEducationForms();
-//       this.clearCertificationForms();
-//       this.clearFamilyForms(); 
-      
-//       this.addEducation();
-//       this.addCertification();
-//       this.addFamily(); 
-//     },
-//     error: (err) => {
-//        console.error('Error creating employee:', err);
-//         alert('Error creating employee: ' + err.error?.message);
-//     },
-//   });
-// }
 this.employeeService.createEmployee(formData).subscribe({
     next: (res) => {
       alert(res || 'Employee created successfully');
@@ -772,9 +729,7 @@ onEditClick(): void {
       return;
     }
 
-      console.log('Form Valid:', this.employeeForm.valid);
-  console.log('Form Values:', this.employeeForm.value);
-  console.log('Selected Employee ID:', this.currentEmployeeId);
+     
 
     this.isEditMode = true;
     this.currentEmployeeId = this.selectedEmployee.id;
@@ -805,7 +760,7 @@ onUpdateClick(): void {
   formData.append('idClient', this.idClient.toString());
 
 
-  console.log('FormData contents before sending:');
+
   for (let pair of (formData as any).entries()) {
     console.log(pair[0] + ': ', pair[1]);
   }
@@ -875,11 +830,7 @@ private prepareUpdateFormData(): FormData {
       formData.append('employeeFamilyInfos', JSON.stringify(familyInfos));
     }
 
-    // Append document infos
-    // const documentInfos = this.documentForms.value.map((doc: any, index: number) => {
-    //   const { upFile, fileBase64, ...cleanDoc } = doc;
-    //   return cleanDoc;
-    // });
+  
     const documentInfos = this.documentForms.value.map((doc: any, index: number) => {
     return {
       id: doc.id || 0,
@@ -888,7 +839,7 @@ private prepareUpdateFormData(): FormData {
       fileName: doc.fileName,
       uploadDate: doc.uploadDate || new Date().toISOString(),
       uploadedFileExtention: doc.uploadedFileExtention || '.txt'
-      // Remove fileBase64 and upFile from JSON
+     
     };
   });
 
@@ -897,7 +848,7 @@ private prepareUpdateFormData(): FormData {
     if (documentInfos && documentInfos.length > 0) {
       formData.append('employeeDocuments', JSON.stringify(documentInfos));
       
-      // Append document files
+     
       this.documentForms.controls.forEach((docForm, index) => {
         const fileControl = docForm.get('upFile');
         if (fileControl && fileControl.value) {
@@ -906,7 +857,7 @@ private prepareUpdateFormData(): FormData {
       });
     }
 
-    // Append idClient
+    
     formData.append('idClient', this.idClient.toString());
 
     return formData;
@@ -953,7 +904,7 @@ onDeleteClick(): void {
     this.employeeService.deleteEmployee(this.selectedEmployee.id).subscribe({
       next: (res: any) => {
         alert(res.message || 'Employee deleted successfully');
-        this.loadEmployees(); // Refresh the list
+        this.loadEmployees(); 
         this.resetForm();
       },
       error: (err: any) => {

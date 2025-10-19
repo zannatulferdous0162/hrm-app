@@ -19,11 +19,11 @@ namespace HRM_Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAllEmployees([FromQuery] int idClient)
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> GetAllEmployees([FromQuery] int idClient, CancellationToken cancellationToken)
         {
             var employees = await _context.Employees
                 .AsNoTracking()
-                .Where(e => e.IdClient == idClient && (e.IsActive == true || e.IsActive == null))
+                .Where(e => e.IdClient == idClient)
                 .Select(e => new EmployeeDTO
                 {
                     Id = e.Id,
@@ -60,7 +60,7 @@ namespace HRM_Api.Controllers
                     HasOvertime = e.HasOvertime,
                     IsActive = e.IsActive,
 
-                    EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null ,
+                    EmployeeImageBase = e.EmployeeImage != null ? Convert.ToBase64String(e.EmployeeImage) : null,
 
                     EmployeeEducationInfos = e.EmployeeEducationInfos.Select(ed => new EducationInfoDto
                     {
@@ -115,7 +115,7 @@ namespace HRM_Api.Controllers
                     }).ToList()
 
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
 
             if (employees == null || !employees.Any())
@@ -129,40 +129,38 @@ namespace HRM_Api.Controllers
         }
 
         [HttpPost("createemployee")]
-        public async Task<IActionResult> CreateEmployee([FromForm] EmployeeDTO dto)
+        public async Task<IActionResult> CreateEmployee([FromForm] EmployeeDTO dto, CancellationToken cancellationToken)
         {
             if (dto == null)
                 return BadRequest(new { Message = "Invalid employee data" });
 
             try
             {
-               
 
-                var form = await Request.ReadFormAsync();
-               
 
-              
+                var form = await Request.ReadFormAsync(cancellationToken);
+
+
+
                 dto.EmployeeEducationInfos = form.TryGetValue("employeeEducationInfos", out var eduJson)
                     ? JsonConvert.DeserializeObject<List<EducationInfoDto>>(eduJson) ?? new List<EducationInfoDto>()
                     : new List<EducationInfoDto>();
-                Console.WriteLine($"Education Infos Count: {dto.EmployeeEducationInfos.Count}");
+               
 
                 dto.EmployeeFamilyInfos = form.TryGetValue("employeeFamilyInfos", out var famJson)
                     ? JsonConvert.DeserializeObject<List<EmployeefamilyInfoDto>>(famJson) ?? new List<EmployeefamilyInfoDto>()
                     : new List<EmployeefamilyInfoDto>();
-                Console.WriteLine($"Family Infos Count: {dto.EmployeeFamilyInfos.Count}");
-                Console.WriteLine($"Family JSON: {famJson}");
+               
 
                 dto.EmployeeProfessionalCertifications = form.TryGetValue("employeeProfessionalCertifications", out var certJson)
                     ? JsonConvert.DeserializeObject<List<EmployeeProfessionalCertificationDto>>(certJson) ?? new List<EmployeeProfessionalCertificationDto>()
                     : new List<EmployeeProfessionalCertificationDto>();
-                Console.WriteLine($"Certifications Count: {dto.EmployeeProfessionalCertifications.Count}");
+               
 
                 dto.EmployeeDocuments = form.TryGetValue("employeeDocuments", out var docJson)
                     ? JsonConvert.DeserializeObject<List<DocumentDto>>(docJson) ?? new List<DocumentDto>()
                     : new List<DocumentDto>();
-                Console.WriteLine($"Documents Count: {dto.EmployeeDocuments.Count}");
-                Console.WriteLine($"Documents JSON: {docJson}");
+               
 
                 for (int i = 0; i < dto.EmployeeFamilyInfos.Count; i++)
                 {
@@ -170,24 +168,24 @@ namespace HRM_Api.Controllers
                     Console.WriteLine($"Family {i}: Name='{family.Name}', Gender='{family.IdGender}', Relationship='{family.IdRelationship}'");
                 }
 
-              
+
                 var documentFiles = form.Files
                     .Where(f => f.Name.StartsWith("documentFile_"))
                     .OrderBy(f => f.Name)
                     .ToList();
 
-               foreach (var file in documentFiles)
-        {
-            Console.WriteLine($"File: {file.Name}, Size: {file.Length}, ContentType: {file.ContentType}");
-        }
+                foreach (var file in documentFiles)
+                {
+                    Console.WriteLine($"File: {file.Name}, Size: {file.Length}, ContentType: {file.ContentType}");
+                }
 
-        var employeeDocuments = await ProcessDocumentFilesAsync(dto.EmployeeDocuments, documentFiles);
+                var employeeDocuments = await ProcessDocumentFilesAsync(dto.EmployeeDocuments, documentFiles, cancellationToken);
 
                 byte[]? employeeImageBytes = null;
                 var profileFile = form.Files.FirstOrDefault(f => f.Name == "profileImage");
                 if (profileFile != null && profileFile.Length > 0)
                 {
-                    employeeImageBytes = await ConvertFileToByteArrayAsync(profileFile);
+                    employeeImageBytes = await ConvertFileToByteArrayAsync(profileFile, cancellationToken);
                 }
 
                 var employee = new Employee
@@ -238,6 +236,7 @@ namespace HRM_Api.Controllers
                     EmployeeEducationInfos = dto.EmployeeEducationInfos.Select(e => new EmployeeEducationInfo
                     {
                         IdClient = e.IdClient,
+                        IdEmployee = e.Id,
                         IdEducationLevel = e.IdEducationLevel,
                         IdEducationExamination = e.IdEducationExamination,
                         IdEducationResult = e.IdEducationResult,
@@ -267,7 +266,7 @@ namespace HRM_Api.Controllers
 
                 Console.WriteLine($"Total Documents to save: {employee.EmployeeDocuments.Count}");
                 _context.Employees.Add(employee);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 Console.WriteLine("=== EMPLOYEE CREATED SUCCESSFULLY ===");
                 return Ok(new { Message = "Employee created successfully", EmployeeId = employee.Id });
@@ -287,7 +286,7 @@ namespace HRM_Api.Controllers
         }
 
 
-        private async Task<List<EmployeeDocument>> ProcessDocumentFilesAsync(List<DocumentDto> documentDtos, List<IFormFile> documentFiles)
+        private async Task<List<EmployeeDocument>> ProcessDocumentFilesAsync(List<DocumentDto> documentDtos, List<IFormFile> documentFiles, CancellationToken cancellationToken)
         {
             var employeeDocuments = new List<EmployeeDocument>();
 
@@ -304,18 +303,18 @@ namespace HRM_Api.Controllers
                 byte[]? fileBytes = null;
                 string? fileExtension = null;
 
-                // SIMPLIFIED FILE MATCHING - Use exact index matching
+              
                 var matchingFile = documentFiles.FirstOrDefault(f => f.Name == $"documentFile_{i}");
 
                 if (matchingFile == null)
                 {
-                    // Fallback: try to get file by index if names don't match exactly
+                    
                     matchingFile = i < documentFiles.Count ? documentFiles[i] : null;
                 }
 
                 if (matchingFile != null && matchingFile.Length > 0)
                 {
-                    fileBytes = await ConvertFileToByteArrayAsync(matchingFile);
+                    fileBytes = await ConvertFileToByteArrayAsync(matchingFile, cancellationToken);
                     fileExtension = Path.GetExtension(matchingFile.FileName);
 
                     Console.WriteLine($"✅ Processing document {i}: {docDto.DocumentName}, File: {matchingFile.FileName}, Size: {matchingFile.Length} bytes");
@@ -342,20 +341,20 @@ namespace HRM_Api.Controllers
                 };
 
                 employeeDocuments.Add(employeeDocument);
-                Console.WriteLine($"✅ Added document: {employeeDocument.DocumentName}, File: {employeeDocument.FileName}");
+               
             }
 
-            Console.WriteLine($"✅ Total documents processed: {employeeDocuments.Count}");
+         
             return employeeDocuments;
         }
 
-        private async Task<byte[]?> ConvertFileToByteArrayAsync(IFormFile file)
+        private async Task<byte[]?> ConvertFileToByteArrayAsync(IFormFile file, CancellationToken cancellationToken)
         {
             if (file == null || file.Length == 0)
                 return null;
 
             using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
+            await file.CopyToAsync(memoryStream, cancellationToken);
             return memoryStream.ToArray();
         }
 
@@ -363,53 +362,53 @@ namespace HRM_Api.Controllers
 
 
 
-       
 
-      
+
+
 
         [HttpPut("updateemployee")]
-        public async Task<IActionResult> UpdateEmployee(int id, [FromForm] EmployeeDTO dto)
+        public async Task<IActionResult> UpdateEmployee(int id, [FromForm] EmployeeDTO dto, CancellationToken cancellationToken)
         {
             if (dto == null || id <= 0)
                 return BadRequest(new { Message = "Invalid employee data" });
 
             try
             {
-                
+
                 var employee = await _context.Employees
                     .Include(e => e.EmployeeEducationInfos)
                     .Include(e => e.EmployeeFamilyInfos)
                     .Include(e => e.EmployeeProfessionalCertifications)
                     .Include(e => e.EmployeeDocuments)
-                    .FirstOrDefaultAsync(e => e.Id == id && e.IdClient == dto.IdClient);
+                    .FirstOrDefaultAsync(e => e.Id == id && e.IdClient == dto.IdClient, cancellationToken);
 
                 if (employee == null)
                     return NotFound(new { Message = "Employee not found" });
 
-                var form = await Request.ReadFormAsync();
+                var form = await Request.ReadFormAsync(cancellationToken);
                 Console.WriteLine($"Form keys received: {string.Join(", ", form.Keys)}");
 
-               
+
                 dto.EmployeeEducationInfos = DeserializeSafe<List<EducationInfoDto>>(form, "employeeEducationInfos");
 
                 dto.EmployeeFamilyInfos = DeserializeSafe<List<EmployeefamilyInfoDto>>(form, "employeeFamilyInfos");
                 dto.EmployeeProfessionalCertifications = DeserializeSafe<List<EmployeeProfessionalCertificationDto>>(form, "employeeProfessionalCertifications");
                 dto.EmployeeDocuments = DeserializeSafe<List<DocumentDto>>(form, "employeeDocuments");
 
-                
+
                 var documentFiles = form.Files
                     .Where(f => f.Name.StartsWith("documentFile_"))
                     .OrderBy(f => f.Name)
                     .ToList();
 
-                var updatedDocuments = await ProcessDocumentFilesAsync(dto.EmployeeDocuments, documentFiles);
+                var updatedDocuments = await ProcessDocumentFilesAsync(dto.EmployeeDocuments, documentFiles, cancellationToken);
 
-               
+
                 var profileFile = form.Files.FirstOrDefault(f => f.Name == "profileImage");
                 if (profileFile != null && profileFile.Length > 0)
-                    employee.EmployeeImage = await ConvertFileToByteArrayAsync(profileFile);
+                    employee.EmployeeImage = await ConvertFileToByteArrayAsync(profileFile, cancellationToken);
 
-                
+
                 employee.EmployeeName = dto.EmployeeName;
                 employee.EmployeeNameBangla = dto.EmployeeNameBangla;
                 employee.FatherName = dto.FatherName;
@@ -436,18 +435,18 @@ namespace HRM_Api.Controllers
                 employee.CreatedBy = dto.CreatedBy ?? "System";
                 employee.SetDate = DateTime.Now;
 
-                // ✅ Begin transaction for safety
-                using var transaction = await _context.Database.BeginTransactionAsync();
+                
+                using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
                 try
                 {
-                    // Remove old related entities
+                   
                     _context.EmployeeEducationInfos.RemoveRange(employee.EmployeeEducationInfos);
                     _context.EmployeeFamilyInfos.RemoveRange(employee.EmployeeFamilyInfos);
                     _context.EmployeeProfessionalCertifications.RemoveRange(employee.EmployeeProfessionalCertifications);
                     _context.EmployeeDocuments.RemoveRange(employee.EmployeeDocuments);
 
-                    // Add updated related data
+                   
                     employee.EmployeeEducationInfos = dto.EmployeeEducationInfos.Select(e => new EmployeeEducationInfo
                     {
                         IdClient = e.IdClient,
@@ -499,15 +498,15 @@ namespace HRM_Api.Controllers
                         doc.IdEmployee = employee.Id;
                     }
 
-                    // ✅ Save all changes safely
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                   
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
 
                     return Ok(new { Message = "Employee updated successfully", EmployeeId = employee.Id });
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync();
+                    await transaction.RollbackAsync(cancellationToken);
                     Console.WriteLine($"Transaction error: {ex}");
                     return StatusCode(500, new { Message = "Error during transaction", Error = ex.Message });
                 }
@@ -522,7 +521,7 @@ namespace HRM_Api.Controllers
                     Details = "Check foreign key constraints and required fields"
                 });
             }
-          
+
         }
 
         private static T DeserializeSafe<T>(IFormCollection form, string key)
@@ -542,25 +541,25 @@ namespace HRM_Api.Controllers
 
 
         [HttpDelete("deleteemployee/{id}")]
-        public async Task<IActionResult> DeleteEmployee(int id)
+        public async Task<IActionResult> DeleteEmployee(int id, CancellationToken cancellationToken)
         {
             if (id <= 0)
                 return BadRequest(new { Message = "Invalid employee ID" });
 
             try
             {
-                
+
                 var employee = await _context.Employees
-                    .FirstOrDefaultAsync(e => e.Id == id);
+                    .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
 
                 if (employee == null)
                     return NotFound(new { Message = "Employee not found" });
 
-                
+
                 employee.IsActive = false;
                 employee.SetDate = DateTime.Now;
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 return Ok(new { Message = "Employee deleted successfully", EmployeeId = id });
             }
@@ -584,6 +583,6 @@ namespace HRM_Api.Controllers
             }
         }
     }
-   
 
-    }
+
+}

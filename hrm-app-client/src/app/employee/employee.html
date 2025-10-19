@@ -417,7 +417,8 @@
 </div>
 
 
-      <!-- Document Information Table -->
+   
+
 <div class="col-12 col-lg-12 mt-3">
     <div class="card h-100">
         <div class="card-header bg-warning text-white py-2 d-flex justify-content-between align-items-center">
@@ -510,129 +511,7 @@
     </div>
 </div>
 
-<!-- <div class="col-12 col-lg-12 mt-3">
-  
-    <div class="card h-100">
-        <div class="card-header bg-warning text-white py-2 d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Document Information</h6>
-            <div>
-                <button type="button" class="btn btn-success btn-sm me-2" (click)="addDocument()">
-                    <i class="bi bi-plus-circle"></i> Add Row
-                </button>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Document Name *</th>
-                            <th>File Name *</th>
-                            <th>Upload Date</th>
-                            <th>File Extension</th>
-                            <th>File</th>
-                          
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody formArrayName="documentInfos">
-                        <tr *ngFor="let document of documentForms.controls; let i = index" 
-                            [formGroupName]="i" 
-                            class="document-form-row">
-                            
-                           
-                            <td>
-                                <input formControlName="documentName" 
-                                       class="form-control form-control-sm border-0" 
-                                       placeholder="e.g., Passport, NID, Certificate" />
-                                <div *ngIf="documentForms.at(i).get('documentName')?.invalid && documentForms.at(i).get('documentName')?.touched" 
-                                     class="text-danger small">
-                                    Document name is required
-                                </div>
-                            </td>
-                            
-                         
-                            <td>
-                                <input formControlName="fileName" 
-                                       class="form-control form-control-sm border-0" 
-                                       placeholder="File name without extension" />
-                                <div *ngIf="documentForms.at(i).get('fileName')?.invalid && documentForms.at(i).get('fileName')?.touched" 
-                                     class="text-danger small">
-                                    File name is required
-                                </div>
-                            </td>
-                            
-                           
-                            <td>
-                                <input type="date" 
-                                       formControlName="uploadDate" 
-                                       class="form-control form-control-sm border-0" />
-                            </td>
-                            
-                         
-                            <td>
-                                <input formControlName="uploadedFileExtention" 
-                                       class="form-control form-control-sm border-0 bg-light" 
-                                       readonly 
-                                       placeholder="Auto-detected" />
-                            </td>
-                            
-                           
-                            <td>
-                                <input type="file" 
-                                       class="form-control form-control-sm border-0" 
-                                       (change)="onFileSelected($event, i)"
-                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
-                                <small class="text-muted">Max: 10MB</small>
-                            </td>
-                            
-                  
-                          
-                            <td class="text-center">
-                                <button type="button" 
-                                        class="btn btn-danger btn-sm" 
-                                        (click)="removeDocument(i)" 
-                                        [disabled]="documentForms.length === 1"
-                                        title="Remove this document">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-         
-          <div class="p-3 border-top" *ngIf="hasDocumentsWithFiles()">
-                <h6 class="mb-2">Document Previews</h6>
-                <div class="row g-2">
-                    <div class="col-auto" *ngFor="let document of documentForms.controls; let i = index">
-                        <div class="card document-preview-card" *ngIf="document.value.fileBase64">
-                            <div class="card-body text-center p-2">
-                                <i class="bi bi-file-earmark-pdf display-6 text-danger" 
-                                   *ngIf="document.value.uploadedFileExtention === '.pdf'"></i>
-                                <i class="bi bi-file-earmark-word display-6 text-primary" 
-                                   *ngIf="document.value.uploadedFileExtention === '.doc' || document.value.uploadedFileExtention === '.docx'"></i>
-                                <i class="bi bi-file-earmark-image display-6 text-success" 
-                                   *ngIf="['.jpg','.jpeg','.png'].includes(document.value.uploadedFileExtention)"></i>
-                                <i class="bi bi-file-earmark-text display-6 text-secondary" 
-                                   *ngIf="!['.pdf','.doc','.docx','.jpg','.jpeg','.png'].includes(document.value.uploadedFileExtention)"></i>
-                                
-                                <div class="small text-truncate" style="max-width: 100px;">
-                                    {{ document.value.fileName }}
-                                </div>
-                                <div class="small text-muted">
-                                    {{ document.value.uploadedFileExtention }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
-              
+           
 
 <div class="col-12 col-lg-12 mt-3">
     <div class="card h-100">
