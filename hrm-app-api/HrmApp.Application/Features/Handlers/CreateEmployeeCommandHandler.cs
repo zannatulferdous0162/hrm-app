@@ -7,7 +7,7 @@ public record CreateEmployeeCommandHandler(IHanaHrmContext context) : IRequestHa
 {
     public async Task<int> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
-        using var transaction = await context.Instance.Database.BeginTransactionAsync(cancellationToken);
+        //await using var transaction = await context.Instance.Database.BeginTransactionAsync(cancellationToken);
 
         var employee = new Employee
         {
@@ -42,6 +42,7 @@ public record CreateEmployeeCommandHandler(IHanaHrmContext context) : IRequestHa
             .Select(efi => new EmployeeFamilyInfo
             {
                 IdClient = request.IdClient,
+
                 Name = efi.Name,
                 IdGender = efi.IdGender,
                 IdRelationship = efi.IdRelationship,
@@ -94,6 +95,7 @@ public record CreateEmployeeCommandHandler(IHanaHrmContext context) : IRequestHa
         };
 
         context.Employees.Add(employee);
+      
         var result = await context.Instance.SaveChangesAsync(cancellationToken);
 
         return result;

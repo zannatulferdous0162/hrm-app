@@ -5,6 +5,7 @@ using HrmApp.Application.Features.Quries.Employees.GetEmployeeById;
 using HrmApp.Shared.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HrmApp.API.Controllers;
 
@@ -46,13 +47,18 @@ public class EmployeeController(IMediator mediator) : ControllerBase
 
         return Ok(employee);
     }
+[HttpPost]
+public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command, CancellationToken cancellationToken)
+{
+    if (command == null)
+        return BadRequest(new { Message = "Invalid employee data" });
 
-    [HttpPost]
-    public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command, CancellationToken cancellationToken)
+    try
     {
-        if (command == null)
-            return BadRequest(new { Message = "Invalid employee data" });
-
+       
+        command.ProfileFile = null;
+        command.EmployeeImage = null;
+        
         var result = await mediator.Send(command, cancellationToken);
 
         if (result == 0)
@@ -64,6 +70,15 @@ public class EmployeeController(IMediator mediator) : ControllerBase
             return Ok(new { Message = "Employee created successfully", EmployeeId = result });
         }
     }
+    catch (DbUpdateException dbEx)
+    {
+        return StatusCode(500, new { Message = "Database error: " + dbEx.InnerException?.Message });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { Message = "Unexpected error: " + ex.Message });
+    }
+}
 
     [HttpPut("delete")]
     public async Task<IActionResult> DeleteEmployee([FromQuery] int idClient, [FromQuery] int id, CancellationToken cancellationToken = default)
