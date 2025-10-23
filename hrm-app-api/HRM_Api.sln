@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36301.6 d17.14
+VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRM_Api", "HRM_Api\HRM_Api.csproj", "{5303BF88-A8DD-471E-9F13-81AD9A0515C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrmApp.Application", "HrmApp.Application\HrmApp.Application.csproj", "{DA50EBCB-3FC8-7F62-6741-47B6D6A27D97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrmApp.Domain", "HrmApp.Domain\HrmApp.Domain.csproj", "{801EB475-B2C7-76D5-1136-4934E1BAD842}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrmApp.Infrastructure", "HrmApp.Infrastructure\HrmApp.Infrastructure.csproj", "{9B512D1B-60FE-434C-AF7D-48FE7618CAE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrmApp.Shared", "HrmApp.Shared\HrmApp.Shared.csproj", "{FB6599E0-4D6D-43AA-B487-F3A1AA5B57A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{5303BF88-A8DD-471E-9F13-81AD9A0515C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5303BF88-A8DD-471E-9F13-81AD9A0515C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5303BF88-A8DD-471E-9F13-81AD9A0515C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA50EBCB-3FC8-7F62-6741-47B6D6A27D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA50EBCB-3FC8-7F62-6741-47B6D6A27D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA50EBCB-3FC8-7F62-6741-47B6D6A27D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA50EBCB-3FC8-7F62-6741-47B6D6A27D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{801EB475-B2C7-76D5-1136-4934E1BAD842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{801EB475-B2C7-76D5-1136-4934E1BAD842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{801EB475-B2C7-76D5-1136-4934E1BAD842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{801EB475-B2C7-76D5-1136-4934E1BAD842}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B512D1B-60FE-434C-AF7D-48FE7618CAE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B512D1B-60FE-434C-AF7D-48FE7618CAE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B512D1B-60FE-434C-AF7D-48FE7618CAE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B512D1B-60FE-434C-AF7D-48FE7618CAE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB6599E0-4D6D-43AA-B487-F3A1AA5B57A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6599E0-4D6D-43AA-B487-F3A1AA5B57A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6599E0-4D6D-43AA-B487-F3A1AA5B57A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6599E0-4D6D-43AA-B487-F3A1AA5B57A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
-﻿using HRM_Api.Models;
+﻿using HrmApp.Application.Features.Handlers;
+using HrmApp.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -12,17 +13,22 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
-
-
-builder.Services.AddControllers();
-
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<HanaHrmContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// FIX: Register IHanaHrmContext interface with its implementation
+builder.Services.AddScoped<IHanaHrmContext, HanaHrmContext>();
 
+// Register MediatR from multiple handler assemblies
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetEmployeeByIdQueryHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(GetAllEmployeesQueryHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(CreateEmployeeCommandHandler).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(DeleteEmployeeCommandHandler).Assembly);
+});
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -36,10 +42,8 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
-
 var app = builder.Build();
 app.UseCors("AllowAngularApp");
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -48,9 +52,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
