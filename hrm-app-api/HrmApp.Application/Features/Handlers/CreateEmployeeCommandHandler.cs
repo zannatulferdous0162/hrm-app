@@ -7,7 +7,7 @@ public record CreateEmployeeCommandHandler(IHanaHrmContext context) : IRequestHa
 {
     public async Task<int> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
-        //await using var transaction = await context.Instance.Database.BeginTransactionAsync(cancellationToken);
+        
 
         var employee = new Employee
         {
@@ -98,6 +98,6 @@ public record CreateEmployeeCommandHandler(IHanaHrmContext context) : IRequestHa
       
         var result = await context.Instance.SaveChangesAsync(cancellationToken);
 
-        return result;
+        return employee.Id;
     }
 }
