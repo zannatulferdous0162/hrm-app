@@ -1,0 +1,786 @@
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+  <div class="row  g-0">
+
+
+  
+    <div class="col-lg-2 col-md-3 bg-dark text-white p-3">
+      <h5 class="mb-4">Employee Catalogue</h5>
+      <ul class="list-group">
+        <li
+          class="list-group-item list-group-item-action"
+          [class.active]="selectedEmployeeId === emp.id"
+          *ngFor="let emp of employees; trackBy: trackById"
+          (click)="selectEmployee(emp)"
+          style="cursor: pointer;"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <small class="d-block">ID: {{ emp.id }}</small>
+              <strong>{{ emp.employeeName }}</strong>
+              <div class="small text-muted">{{ emp.designation }}</div>
+            </div>
+           
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  <div class="col-lg-10 col-md-9 main-content">
+      <div class="container-fluid h-100 py-3">
+
+      <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
+
+          
+        
+
+<div class="col-lg-10 col-md-9 main-content">
+      <div class="container-fluid h-100 py-3">
+        <form [formGroup]="employeeForm" class="h-100 d-flex flex-column">
+
+        
+          
+          <div *ngIf="isEditMode" class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+            <strong><i class="bi bi-pencil-square"></i> Edit Mode</strong> - You are currently editing employee data.
+            <button type="button" class="btn-close" (click)="onCancelEdit()"></button>
+          </div>
+
+<div class="mb-3 pb-2 border-bottom">
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+    <div class="ms-auto d-flex gap-2">
+      <button type="button" class="btn btn-success btn-sm" (click)="onAddClick()" 
+              [disabled]="isEditMode">
+        <i class="bi bi-plus-circle"></i> Add
+      </button>
+
+      <button type="button" class="btn btn-warning btn-sm" (click)="onEditClick()" 
+              [disabled]="!selectedEmployee || isEditMode">
+        <i class="bi bi-pencil"></i> Edit
+      </button>
+
+
+      <div *ngIf="isEditMode" class="d-flex gap-2">
+        <button type="button" class="btn btn-primary btn-sm" (click)="onUpdateClick()">
+          <i class="bi bi-check-circle"></i> Update
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="onCancelEdit()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+      </div>
+
+      <button type="button" class="btn btn-danger btn-sm" (click)="onDeleteClick()" 
+              [disabled]="!selectedEmployee || isEditMode">
+        <i class="bi bi-trash"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+       
+          <div class="flex-grow-1 overflow-auto">
+            <div class="row g-3">
+              
+   <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Employee Name *</label>
+  <input formControlName="employeeName" class="form-control form-control-sm" />
+  <div *ngIf="employeeForm.get('employeeName')?.invalid && employeeForm.get('employeeName')?.touched"
+       class="text-danger small">
+    Employee name is required
+  </div>
+</div>
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Employee Image</label>
+  <input
+    type="file"
+    id="profileImage"
+    (change)="onProfileImageSelected($event)"
+    accept="image/*"
+    class="form-control form-control-sm"
+  />
+  
+  <div *ngIf="previewImage" class="mt-2 text-center">
+    <img
+      [src]="previewImage"
+      alt="Employee Photo"
+      width="120"
+      height="120"
+      style="border-radius: 8px; border: 1px solid #ccc;"
+    />
+    <div class="small text-muted mt-1">Preview</div>
+  </div>
+</div>
+
+
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Employee Name Bangla *</label>
+                <input formControlName="employeeNameBangla" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('employeeNameBangla')?.invalid && employeeForm.get('employeeNameBangla')?.touched"
+                     class="text-danger small">
+                  Employee name in Bangla is required
+                </div>
+              </div>
+       
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Father's Name</label>
+                <input formControlName="fatherName" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Mother's Name</label>
+                <input formControlName="motherName" class="form-control form-control-sm" />
+              </div>
+
+            
+             <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Employee Type</label>
+  <select formControlName="idEmployeeType" class="form-select form-select-sm">
+    <option value="">-- Select Employee Type --</option>
+    <option *ngFor="let empType of employeeTypeList" [value]="empType.value">
+      {{ empType.text }}
+    </option>
+  </select>
+</div>
+
+              
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Job Type</label>
+  <select formControlName="idJobType" class="form-select form-select-sm">
+    <option value="">-- Select Job Type --</option>
+    <option *ngFor="let jobType of jobTypeList" [value]="jobType.value">
+      {{ jobType.text }}
+    </option>
+  </select>
+</div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Joining Date</label>
+                <input type="date" formControlName="joiningDate" class="form-control form-control-sm" />
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Date of Birth</label>
+                <input type="date" formControlName="birthDate" class="form-control form-control-sm" />
+              </div>
+
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Gender</label>
+  <select formControlName="idGender" class="form-select form-select-sm">
+    <option value="">-- Select Gender --</option>
+    <option *ngFor="let gender of genderList" [value]="gender.value">
+      {{ gender.text }}
+    </option>
+  </select>
+</div>
+
+ <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Department</label>
+  <select formControlName="idDepartment" class="form-select form-select-sm">
+    <option value="">-- Select Department --</option>
+    <option *ngFor="let dept of departmentList" [value]="dept.value">
+      {{ dept.text }}
+    </option>
+  </select>
+</div>
+
+          <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Designation</label>
+  <select formControlName="idDesignation" class="form-select form-select-sm">
+    <option value="">-- Select Designation --</option>
+    <option *ngFor="let des of designationList" [value]="des.value">
+      {{ des.text }}
+    </option>
+  </select>
+</div>
+
+
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Religion</label>
+  <select formControlName="idReligion" class="form-select form-select-sm">
+    <option value="">-- Select Religion --</option>
+    <option *ngFor="let rel of religionList" [value]="rel.value">
+      {{ rel.text }}
+    </option>
+  </select>
+</div>     
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">Contact No</label>
+                <input formControlName="contactNo" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('contactNo')?.invalid && employeeForm.get('contactNo')?.touched" 
+                     class="text-danger small">
+                  Please enter a valid 11-digit contact number
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Marital Status</label>
+  <select formControlName="idMaritalStatus" class="form-select form-select-sm">
+    <option value="">-- Select Marital Status --</option>
+    <option *ngFor="let mar of maritalStatusList" [value]="mar.value">
+      {{ mar.text }}
+    </option>
+  </select>
+</div>
+
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Week Off</label>
+  <select formControlName="idWeekOff" class="form-select form-select-sm">
+    <option value="">-- Select Week Off --</option>
+    <option *ngFor="let week of weekOffList" [value]="week.value">
+      {{ week.text }}
+    </option>
+  </select>
+</div>
+<div class="col-xl-3 col-lg-4 col-md-6">
+  <label class="form-label fw-semibold">Section</label>
+  <select formControlName="idSection" class="form-select form-select-sm">
+    <option value="">-- Select Section --</option>
+    <option *ngFor="let section of sectionList" [value]="section.value">
+      {{ section.text }}
+    </option>
+  </select>
+</div>
+
+              <div class="col-xl-3 col-lg-4 col-md-6">
+                <label class="form-label fw-semibold">NID</label>
+                <input formControlName="nationalIdentificationNumber" class="form-control form-control-sm" />
+                <div *ngIf="employeeForm.get('nid')?.invalid && employeeForm.get('nid')?.touched" 
+                     class="text-danger small">
+                  Please enter a valid NID (10-17 digits)
+                </div>
+              </div>
+
+          
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">PresentAddress</label>
+                <textarea formControlName="presentAddress" class="form-control form-control-sm" rows="2"></textarea>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Permanent Address</label>
+                <textarea formControlName="address" class="form-control form-control-sm" rows="2"></textarea>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label fw-semibold">Is Active?</label><br />
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="true" formControlName="isActive" 
+                         id="activeYes" />
+                  <label class="form-check-label" for="activeYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" value="false" formControlName="isActive" 
+                         id="activeNo" />
+                  <label class="form-check-label" for="activeNo">No</label>
+                </div>
+              </div>
+            </div>
+
+            
+
+      <div class="col-12 col-lg-12">
+    <div class="card h-100">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Family Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addFamily()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name *</th>
+                            <th>Gender *</th>
+                            <th>Relationship *</th>
+                            <th>Date of Birth</th>
+                            <th>Contact No</th>
+                            <th>Current Address</th>
+                            <th>Permanent Address</th>
+                            <th>Set Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="familyInfos">
+                        <tr *ngFor="let family of familyForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="family-form-row">
+                            
+                         
+                            <td>
+                                <input formControlName="name" 
+                                       class="form-control form-control-sm border-0" 
+                                       placeholder="Enter name" />
+                                <div *ngIf="familyForms.at(i).get('name')?.invalid && familyForms.at(i).get('name')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                   
+                            
+                            <td>
+                                <select formControlName="idGender" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let gender of genderList" 
+                                            [value]="gender.value">
+                                        {{ gender.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="familyForms.at(i).get('idGender')?.invalid && familyForms.at(i).get('idGender')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                 
+                            
+                            <td>
+                                <select formControlName="idRelationship" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let relationship of relationshipList" 
+                                            [value]="relationship.value">
+                                        {{ relationship.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="familyForms.at(i).get('idRelationship')?.invalid && familyForms.at(i).get('idRelationship')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                         
+                            
+                            <td>
+                                <input type="date" 
+                                       formControlName="dateOfBirth" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                     
+                            
+                            <td>
+                                <input formControlName="contactNo" 
+                                       class="form-control form-control-sm border-0" 
+                                       placeholder="Contact number" />
+                            </td>
+                            
+                       
+                            
+                            <td>
+                                <textarea formControlName="currentAddress" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          placeholder="Current address"
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                  
+                            
+                            <td>
+                                <textarea formControlName="permanentAddress" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          placeholder="Permanent address"
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                            
+                           
+                            
+                            <td>
+                                <input type="date" 
+                                       formControlName="setDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                           
+                            
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeFamily(i)" 
+                                        [disabled]="familyForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>          
+        </div>
+    </div>
+</div>
+
+
+   
+
+<div class="col-12 col-lg-12 mt-3">
+    <div class="card h-100">
+        <div class="card-header bg-warning text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Document Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addDocument()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            
+                            <th>Document Name *</th>
+                            <th>File Name *</th>
+                            <th>Upload Date</th>
+                            <th>File Extension</th>
+                            <th>File *</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="documentInfos">
+                        <tr *ngFor="let document of documentForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="document-form-row">
+                            
+                           
+                            
+                            <td>
+                                <input formControlName="documentName" 
+                                       class="form-control form-control-sm" 
+                                       placeholder="e.g., Passport, NID, Certificate" />
+                                <div *ngIf="documentForms.at(i).get('documentName')?.invalid && documentForms.at(i).get('documentName')?.touched" 
+                                     class="text-danger small">
+                                    Document name is required
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <input formControlName="fileName" 
+                                       class="form-control form-control-sm" 
+                                       placeholder="File name without extension" />
+                                <div *ngIf="documentForms.at(i).get('fileName')?.invalid && documentForms.at(i).get('fileName')?.touched" 
+                                     class="text-danger small">
+                                    File name is required
+                                </div>
+                            </td>
+                            
+                            <td>
+                                <input type="date" 
+                                       formControlName="uploadDate" 
+                                       class="form-control form-control-sm" />
+                            </td>
+                            
+                            <td>
+                                <input formControlName="uploadedFileExtention" 
+                                       class="form-control form-control-sm bg-light" 
+                                       readonly 
+                                       placeholder="Auto-detected" />
+                            </td>
+                            
+                            <td>
+                                <input type="file" 
+                                       class="form-control form-control-sm" 
+                                       (change)="onFileSelected($event, i)"
+                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" />
+                                <small class="text-muted">Max: 10MB</small>
+                                <div *ngIf="documentFiles[i]" class="text-success small">
+                                    ✓ {{ documentFiles[i]?.name }}
+                                </div>
+                            </td>
+                            
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeDocument(i)" 
+                                        [disabled]="documentForms.length === 1"
+                                        title="Remove this document">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+           
+
+<div class="col-12 col-lg-12 mt-3">
+    <div class="card h-100">
+        <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Professional Certification</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addCertification()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Certification Title</th>
+                            <th>Institute Name</th>
+                            <th>Institute Location</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="certificationInfos">
+                        <tr *ngFor="let certification of certificationForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="certification-form-row">
+                            
+                       
+                            <td>
+                                <input formControlName="certificationTitle" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                    
+                            <td>
+                                <input formControlName="certificationInstitute" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input formControlName="instituteLocation" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                          
+                            <td>
+                                <input type="date" 
+                                       formControlName="fromDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="date" 
+                                       formControlName="toDate" 
+                                       class="form-control form-control-sm border-0" />
+                            </td>
+                            
+                        
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeCertification(i)" 
+                                        [disabled]="certificationForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-12 col-lg-12">
+    <div class="card h-100">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Education Information</h6>
+            <div>
+                <button type="button" class="btn btn-success btn-sm me-2" (click)="addEducation()">
+                    <i class="bi bi-plus-circle"></i> Add Row
+                </button>
+              
+            </div>
+        </div>
+        <div class="card-body p-0">
+           
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Institute Name *</th>
+                            <th>Education Level *</th>
+                            <th>Examination *</th>
+                            <th>Result *</th>
+                            <th>Passing Year *</th>
+                            <th>CGPA</th>
+                            <th>Major/Group</th>
+                            <th>Duration</th>
+                            <th>Marks</th>
+                            <th>Scale</th>
+                            <th>Foreign</th>
+                            <th >achievement</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody formArrayName="educationInfos">
+                        <tr *ngFor="let education of educationForms.controls; let i = index" 
+                            [formGroupName]="i" 
+                            class="education-form-row">
+                            
+                         
+                            <td>
+                                <input formControlName="instituteName" 
+                                       class="form-control form-control-sm border-0" 
+                                        />
+                                <div *ngIf="educationForms.at(i).get('instituteName')?.invalid && educationForms.at(i).get('instituteName')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                          
+                            <td>
+                                <select formControlName="idEducationLevel" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let level of educationLevelList" 
+                                            [value]="level.value">
+                                        {{ level.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationLevel')?.invalid && educationForms.at(i).get('idEducationLevel')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                           
+                            <td>
+                                <select formControlName="idEducationExamination" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let exam of educationExaminationList" 
+                                            [value]="exam.value">
+                                        {{ exam.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationExamination')?.invalid && educationForms.at(i).get('idEducationExamination')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                          
+                            <td>
+                                <select formControlName="idEducationResult" 
+                                        class="form-select form-select-sm border-0">
+                                    <option value="">Select</option>
+                                    <option *ngFor="let result of educationResultList" 
+                                            [value]="result.value">
+                                        {{ result.text }}
+                                    </option>
+                                </select>
+                                <div *ngIf="educationForms.at(i).get('idEducationResult')?.invalid && educationForms.at(i).get('idEducationResult')?.touched" 
+                                     class="text-danger small">
+                                    Required
+                                </div>
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="passingYear" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                                <div *ngIf="educationForms.at(i).get('passingYear')?.invalid && educationForms.at(i).get('passingYear')?.touched" 
+                                     class="text-danger small">
+                                    Valid year
+                                </div>
+                            </td>
+                            
+                            
+                            <td>
+                                <input type="number" 
+                                       formControlName="cgpa" 
+                                       class="form-control form-control-sm border-0" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="5" 
+                                      />
+                            </td>
+                            
+                            
+                            <td>
+                                <input formControlName="major" 
+                                       class="form-control form-control-sm border-0" 
+                                       />
+                            </td>
+                            
+                          
+                            <td>
+                                <input type="number" 
+                                       formControlName="duration" 
+                                       class="form-control form-control-sm border-0" 
+                                       min="1" 
+                                       max="10" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="marks" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+                            
+                        
+                            <td>
+                                <input type="number" 
+                                       formControlName="examScale" 
+                                       class="form-control form-control-sm border-0" 
+                                      />
+                            </td>
+          
+                            <td class="text-center">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       formControlName="isForeignInstitute" 
+                                       id="foreignInstitute{{i}}">
+                            </td>
+                             <td>
+                                <textarea formControlName="achievement" 
+                                          class="form-control form-control-sm border-0" 
+                                          rows="2" 
+                                          
+                                          style="resize: vertical; min-height: 60px;"></textarea>
+                            </td>
+                            
+                           
+                            <td class="text-center">
+                                <button type="button" 
+                                        class="btn btn-danger btn-sm" 
+                                        (click)="removeEducation(i)" 
+                                        [disabled]="educationForms.length === 1"
+                                        title="Remove this row">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>          
+        </div>
+    </div>
+</div>
+            </div>
+         
+        </form>
+      </div>
+    </div> 
+ 
